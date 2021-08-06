@@ -24,7 +24,7 @@ def addCategory(category):
             return 'Categoria existente'
     except: 
         with open(f'{category}.csv','w') as f:
-          f.write('tarea,categoria,fecha,dias restantes')
+          f.write('tarea,categoria,fecha')
 
 def getCategories(): 
     """ A partir de los archivos csv creados, obtiene las categorias de las tareas """
@@ -49,8 +49,7 @@ def getTasks(file):
                 final.append({
                     'tarea' : aux[0],
                     'categoria': aux[1],
-                    'fecha': aux[2],
-                    'dias restantes': aux[3]
+                    'fecha': aux[2]
                 })
     except:
         return 'No se encontro el archivo'
@@ -86,15 +85,12 @@ def addTask():
             task['tarea'] = inputString('Descripcion de la tarea: ')
             task['categoria'] = chosen_category
             task['fecha'] = validarFecha() # fecha formato datetime con hora incluida
-            task['dias restantes'] = task['fecha'] - datetime.today() # obtengo los dias que faltan para la tarea
-            task['dias restantes'] = task['dias restantes'].days
             # task['horas restantes'] = 
             task['fecha'] = task['fecha'].strftime('%d-%m-%Y %H:%M') # le doy el formato correcto a la fecha 
-    
             with open(f'{chosen_category}.csv','a') as f:
-                f.write('\n') # printeo salto de linea
+                f.write('\n') # printeo salto de lineas
                 for k,v in task.items():
-                    if k == 'dias restantes': # si la key es dias restantes, no le agrego coma, ya que es la ultima
+                    if k == 'fecha': # si la key es dias restantes, no le agrego coma, ya que es la ultima
                         f.write(str(v))
                     else:
                         f.write(f'{v},')
@@ -102,11 +98,18 @@ def addTask():
     else:
         return 'NO EXISTEN CATEGORIAS, VUELVA AL MENU PARA AGREGAR ALGUNA'
 
-
-def update_days():
-    categories = getCategories()
-    pass
+def getDeadlines():
+    tasks = getAllTasks()
+    deadlines = []
+    for task in tasks:
+        aux = datetime.strptime(task['fecha'],"%d-%m-%Y %H:%M") - datetime.today()
+        deadlines.append(aux.days)
+        print(f'TAREA: {task["tarea"]}')
+        print(f'CATEGORIA: {task["categoria"]}')
+        print(f'Tiempo restante: {aux}\n')
     
+
+
 
 def seguir():
     """ Funcion para determinar si sigue realizando acciones"""
@@ -159,9 +162,10 @@ def menu():
     opc_menu['1'] = 'Agregar categoria/s'
     opc_menu['2'] = 'Agregar TAREA'
     opc_menu['3'] = 'Salir'
-    printMenu(opc_menu)
     while sigue:
         try:
+            system('cls')
+            printMenu(opc_menu)
             opc_user = validacionEntero('Ingrese su opcion: ', max=len(opc_menu.keys()))
             if opc_user == 1:
                 cant = validacionEntero('Cuantas categorias desea agregar: ', max = 10)
@@ -173,7 +177,10 @@ def menu():
                 if sigue:
                     printMenu(opc_menu)
             elif opc_user == 2:
-                pass
+                addTask()
+                sigue = seguir()
+                if sigue:
+                    printMenu(opc_menu)
             elif opc_user == 3:
                 sigue = False
         except:
@@ -186,12 +193,9 @@ def menu():
 
 
 def main():
-    # menu()
-    todas_las_tareas = getAllTasks()
-    for e in todas_las_tareas:
-        for k,v in e.items():
-            print(k.title(),v.title())
-        print('\n')
+    getDeadlines()
+
+
     
 
 if __name__ == '__main__':
