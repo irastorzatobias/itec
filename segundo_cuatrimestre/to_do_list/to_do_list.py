@@ -28,28 +28,84 @@ def addCategory(category):
 
 def getCategories(): 
     """ A partir de los archivos csv creados, obtiene las categorias de las tareas """
-    files = os.listdir('.')
-    files = list(filter(lambda x: ('.csv' in x), files)) 
-    files = list(map(lambda x: x[0:-4], files))
-    print('-- CATEGORIAS -- ')
-    for e in files:
-        print(f'{e.title()}')
+    categories = os.listdir('.')
+    categories = list(filter(lambda x: ('.csv' in x), categories)) 
+    categories = list(map(lambda x: x[0:-4], categories))
+    return categories
 
 
+def getTasks(file):
+    """" Obtiene las tareas del archivo especificado """
+    lineas = []      
+    tasks = []
+    final = []
+    try:
+        with open(file) as f:
+            content = f.readlines() # lista con valores csv
+            for i in range(1,len(content)):
+                tasks.append(content[i].strip())
+            for e in tasks:
+                aux = e.split(',')
+                final.append({
+                    'tarea' : aux[0],
+                    'categoria': aux[1],
+                    'fecha': aux[2],
+                    'dias restantes': aux[3]
+                })
+    except:
+        return 'No se encontro el archivo'
+    else:
+        return final
+    
+def getAllTasks():
+    """ Obtiene todas las tareas de las categorias especificadas por el usuario """
+    categories = getCategories()
+    all_tasks = []
+    for category in categories:
+        aux = getTasks(f'{category}.csv')
+        all_tasks += aux
+    return all_tasks
+     
 def addTask():
     """ Agrega tarea al archivo de categoria correspondiente"""
     categories = getCategories()
-    try:
-        with open(f'{categories}.csv') as f:
-            pass
-    except:
-        return 'La categoria no existe, intente nuevamente'
+    chosen_category = ''
+    task = {}
+    if len(categories) > 1:
+        print('-- CATEGORIAS DISPONIBLES --')
+        for category in categories:
+            print(f'{category.title()}')
+        while chosen_category.lower() not in categories:
+            chosen_category = input('A que categoria corresponde su tarea?: ')
+        if chosen_category.lower() not in categories:
+            system('cls')
+            print('La categoria no existe, intente nuevamente')
+        else:
+            system('cls')
+            print('-- AGREGANDO CATEGORIA --')
+            task['tarea'] = inputString('Descripcion de la tarea: ')
+            task['categoria'] = chosen_category
+            task['fecha'] = validarFecha() # fecha formato datetime con hora incluida
+            task['dias restantes'] = task['fecha'] - datetime.today() # obtengo los dias que faltan para la tarea
+            task['dias restantes'] = task['dias restantes'].days
+            # task['horas restantes'] = 
+            task['fecha'] = task['fecha'].strftime('%d-%m-%Y %H:%M') # le doy el formato correcto a la fecha 
+    
+            with open(f'{chosen_category}.csv','a') as f:
+                f.write('\n') # printeo salto de linea
+                for k,v in task.items():
+                    if k == 'dias restantes': # si la key es dias restantes, no le agrego coma, ya que es la ultima
+                        f.write(str(v))
+                    else:
+                        f.write(f'{v},')
+        return task
     else:
-        with open(f'{categories}.csv','a') as f:
-            task = {}
-            task['description'] = inputString('Ingrese la tarea: ')
-            task['fecha'] = validarFecha('Fecha a cumplir: ')
-            
+        return 'NO EXISTEN CATEGORIAS, VUELVA AL MENU PARA AGREGAR ALGUNA'
+
+
+def update_days():
+    categories = getCategories()
+    pass
     
 
 def seguir():
@@ -78,16 +134,17 @@ def validarFecha():
     while val == False:
         try:
             fecha = input('Ingrese fecha a cumplir: ')
-            fecha = datetime.strptime(fecha, '%d-%m-%Y')
+            fecha = datetime.strptime(fecha, '%d-%m-%Y %H:%M')
             if fecha < today:
                 system('cls')
                 print('Fecha anterior al dia de hoy, intente nuevamente')
             else:
                 val = True
         except:
-            print('El formato no coincide con dd-mm-aaaa')     
-    print(fecha.strftime('%d-%m-%Y'))
-    print(datetime.today().strftime('%d-%m-%Y'))
+            print('El formato no coincide con dd-mm-aaaa hh:mm')     
+    return fecha
+
+
 
 def printMenu(opciones):
     for k,v in opciones.items():
@@ -129,9 +186,13 @@ def menu():
 
 
 def main():
-    #menu()
-    validarFecha()
-    pass
+    # menu()
+    todas_las_tareas = getAllTasks()
+    for e in todas_las_tareas:
+        for k,v in e.items():
+            print(k.title(),v.title())
+        print('\n')
+    
 
 if __name__ == '__main__':
     main()
