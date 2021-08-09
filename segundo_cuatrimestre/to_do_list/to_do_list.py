@@ -144,18 +144,20 @@ def getDelayedTasks():
     except:
         return 'No existen tareas demoradas'
     else:
-        system('cls')
         for i in range(len(final)):
             print(f'{i} - TAREA: {final[i]["tarea"]}')
             print(f'CATEGORIA: {final[i]["categoria"]}')
             print(f'Fecha: {final[i]["fecha"]}\n')
       
-def chooseTask(tasks):
+def chooseTask():
     tasks = getAllTasks()
-    printTasks()
-    choosenTask = validacionEntero('Ingrese el numero correspondiente a la tarea: ',max = len(tasks) - 1)
-    return tasks[choosenTask]
-        
+    print(len(tasks))
+    if len(tasks) >= 1:
+        printTasks()
+        choosenTask = validacionEntero('Ingrese el numero correspondiente a la tarea: ',max = len(tasks) - 1)
+        return tasks[choosenTask]
+    else:
+        return []
            
 
 def printTasks():
@@ -163,6 +165,7 @@ def printTasks():
     if len(tasks) < 1:
         system('cls')
         print('Sin tareas para mostrar')
+        return []
     else:
         print(' -- ATENCION, SI YA PASO EL PLAZO DE ALGUNA TAREA SERA PASADA AL ARCHIVO "DEMORADAS.CSV" AUTOMATICAMENTE --')
         sigue = seguir('Desea continuar?(s/n): ')
@@ -189,17 +192,20 @@ def checkTodayTasks():
     tasks = getAllTasks()
     today = datetime.today()
     tasks = [t for t in tasks if t['diasRestantes'] == '0']
-    for i in range(len(tasks)):
-        print('-- TAREAS DENTRO DE LAS 24 HORAS --')
-        print(f'{i} - TAREA: {tasks[i]["tarea"]}')
-        print(f'{i} - CATEGORIA: {tasks[i]["categoria"]}')
-        print(f'{i} - FECHA: {datetime.strptime(tasks[i]["fecha"],"%d-%m-%Y %H:%M")}')
-        sigue = seguir('Desea marcar alguna como completada? (s/n): ')
-        if sigue:
-            choosenTask = validacionEntero('Ingrese el numero correspondiente a la tarea segun el menu anterior: ',max = len(tasks) - 1)
-            removeTask(f'{tasks[0]["categoria"]}.csv',tasks[0]['tarea'])
-    return tasks
-            
+    if len(tasks) >= 1:
+        for i in range(len(tasks)):
+            print('-- TAREAS DENTRO DE LAS 24 HORAS --')
+            print(f'{i} - TAREA: {tasks[i]["tarea"]}')
+            print(f'{i} - CATEGORIA: {tasks[i]["categoria"]}')
+            print(f'{i} - FECHA: {datetime.strptime(tasks[i]["fecha"],"%d-%m-%Y %H:%M")}')
+            sigue = seguir('Desea marcar alguna como completada? (s/n): ')
+            if sigue:
+                choosenTask = validacionEntero('Ingrese el numero correspondiente a la tarea segun el menu anterior: ',max = len(tasks) - 1)
+                removeTask(f'{tasks[0]["categoria"]}.csv',tasks[0]['tarea'])
+        return tasks
+    else:
+        system('cls')
+        print('No hay tareas para hoy')
 
         
 
@@ -277,7 +283,6 @@ def menu():
                 if sigue:
                     printMenu(opc_menu)
             elif opc_user == 3:
-                system('cls')
                 checkTodayTasks()
                 sigue = seguir(message)
                 if sigue: 
@@ -288,15 +293,20 @@ def menu():
                 if sigue: 
                     printMenu(opc_menu)
             elif opc_user == 5:
+                system('cls')
                 getDelayedTasks()
                 sigue = seguir(message)
                 if sigue:
                     printMenu(opc_menu)
             elif opc_user == 6: 
                 task = chooseTask()
-                archivo = f'{task["categoria"]}.csv'
-                tarea = task["tarea"].lower()
-                removeTask(archivo, tarea)
+                if len(task) > 1:
+                    archivo = f'{task["categoria"]}.csv'
+                    tarea = task["tarea"].lower()
+                    removeTask(archivo, tarea)
+                else:
+                    system('cls')
+                    print('Sin tarea para remover')
                 sigue = seguir(message)
                 if sigue:
                     printMenu(opc_menu)
