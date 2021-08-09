@@ -28,6 +28,6 @@ def validacionEntero(message='Imgrese un numero entero: ', min=0,max=sys.maxsize
                 validacion = True
                 return numero
             else: 
-                print(f'Numero entero mayor que {min - 1} y menor que {max + 1}')
+                print(f'Numero entero mayor o igual {min} y menor o igual que {max}')
         except:
             return 'Error, argumento invalido'
