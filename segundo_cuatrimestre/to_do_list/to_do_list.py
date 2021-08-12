@@ -26,26 +26,26 @@ def getCategories():
 def addTask():
     """ Agrega tarea al archivo de categoria correspondiente"""
     categories = getCategories()
-    chosen_category = ''
+    choosenCategory = ''
     task = {}
     if len(categories) >= 1:
         print('-- CATEGORIAS DISPONIBLES --')
         for category in categories:
             print(f'{category.title()}')
-        while chosen_category.lower() not in categories:
-            chosen_category = input('A que categoria corresponde su tarea?: ')
-        if chosen_category.lower() not in categories:
+        while choosenCategory.lower() not in categories:
+            choosenCategory = input('A que categoria corresponde su tarea?: ')
+        if choosenCategory.lower() not in categories:
             system('cls')
             print('La categoria no existe, intente nuevamente')
         else:
             system('cls')
             print('-- AGREGANDO CATEGORIA --')
             task['tarea'] = inputString('Descripcion de la tarea: ')
-            task['categoria'] = chosen_category
+            task['categoria'] = choosenCategory
             task['fecha'] = validarFecha() # fecha formato datetime con hora incluida
             task['diasRestantes'] = (task['fecha'] - datetime.today()).days
             task['fecha'] = task['fecha'].strftime('%d-%m-%Y %H:%M') # le doy el formato correcto a la fecha 
-            with open(f'{chosen_category}.csv','a') as f:
+            with open(f'{choosenCategory}.csv','a') as f:
                 for k,v in task.items():
                     if k == 'diasRestantes': # si la key es fecha, no le agrego coma, ya que es la ultima
                         f.write(f'{v}\n')
@@ -81,12 +81,12 @@ def getTasks(file):
 def getAllTasks():
     """ Obtiene todas las tareas de todas las categorias """
     categories = getCategories()
-    all_tasks = []
+    allTasks = []
     try:
         for category in categories:
             aux = getTasks(f'{category}.csv')
-            all_tasks += aux
-        return sorted(all_tasks,key=lambda x: x['diasRestantes'],reverse=True)
+            allTasks += aux
+        return sorted(allTasks,key=lambda x: x['diasRestantes'],reverse=True)
     except:
         return []
     
@@ -118,6 +118,7 @@ def moveTasks(file,task):
         
         
 def removeTask(file, task):
+    """ Remueve una tarea de un archivo reescribiendolo, sin la tarea especificada"""
     with open(file) as f:
         lines = f.readlines()
     with open(file,'w') as f:
@@ -126,6 +127,7 @@ def removeTask(file, task):
                 f.write(line)
                  
 def getDelayedTasks():
+    """ Cheuquea si hay tareas demoradas, y si las hay, las printea."""
     file = 'demoradas.csv'
     delayedTasks = []
     final = []
@@ -150,6 +152,7 @@ def getDelayedTasks():
             print(f'Fecha: {final[i]["fecha"]}\n')
       
 def chooseTask():
+    """ Obtiene todas las tareas, y a partir de su indice en la lista, devuelve la elegida por el usuario"""
     tasks = getAllTasks()
     print(len(tasks))
     if len(tasks) >= 1:
@@ -161,6 +164,7 @@ def chooseTask():
            
 
 def printTasks():
+    """ Printea todas las tareas con sus categorias y tiempo restante"""
     tasks = getAllTasks()
     if len(tasks) < 1:
         system('cls')
@@ -248,25 +252,24 @@ def validarFecha():
 def printMenu(opciones):
     for k,v in opciones.items():
         print(f'{k}. {v}')
-    pass
             
 def menu():
     """ Menu interactivo to_do_list"""
     sigue = True
     message = 'Desea realizar otra accion? (s/n): '
-    opc_user = '' # opcion usuario
-    opc_menu = {}
-    opc_menu['1'] = 'Agregar categoria/s'
-    opc_menu['2'] = 'Agregar TAREA'
-    opc_menu['3'] = 'Ver tareas para hoy'
-    opc_menu['4'] = 'Ver tareas'
-    opc_menu['5'] = 'Ver tareas demoradas'
-    opc_menu['6'] = 'Remover tarea'
-    opc_menu['7'] = 'Salir'
+    opcUser = '' # opcion usuario
+    opcMenu = {}
+    opcMenu['1'] = 'Agregar categoria/s'
+    opcMenu['2'] = 'Agregar TAREA'
+    opcMenu['3'] = 'Ver tareas para hoy'
+    opcMenu['4'] = 'Ver tareas'
+    opcMenu['5'] = 'Ver tareas demoradas'
+    opcMenu['6'] = 'Remover tarea'
+    opcMenu['7'] = 'Salir'
     while sigue:
             system('cls')
-            printMenu(opc_menu)
-            opc_user = validacionEntero('Ingrese su opcion: ', max=len(opc_menu.keys()))
+            printMenu(opcMenu)
+            opc_user = validacionEntero('Ingrese su opcion: ', max=len(opcMenu.keys()))
             if opc_user == 1:
                 cant = validacionEntero('Cuantas categorias desea agregar: ', max = 10)
                 for i in range(cant):
@@ -275,29 +278,30 @@ def menu():
                     addCategory(categoria)
                 sigue = seguir(message)
                 if sigue:
-                    printMenu(opc_menu)
+                    printMenu(opcMenu)
             elif opc_user == 2:
                 system('cls')
                 print(addTask())
                 sigue = seguir(message)
                 if sigue:
-                    printMenu(opc_menu)
+                    printMenu(opcMenu)
             elif opc_user == 3:
+                system('cls')
                 checkTodayTasks()
                 sigue = seguir(message)
                 if sigue: 
-                    printMenu(opc_menu)
+                    printMenu(opcMenu)
             elif opc_user == 4:
                 printTasks()
                 sigue = seguir(message)
                 if sigue: 
-                    printMenu(opc_menu)
+                    printMenu(opcMenu)
             elif opc_user == 5:
                 system('cls')
                 getDelayedTasks()
                 sigue = seguir(message)
                 if sigue:
-                    printMenu(opc_menu)
+                    printMenu(opcMenu)
             elif opc_user == 6: 
                 task = chooseTask()
                 if len(task) > 1:
@@ -309,7 +313,7 @@ def menu():
                     print('Sin tarea para remover')
                 sigue = seguir(message)
                 if sigue:
-                    printMenu(opc_menu)
+                    printMenu(opcMenu)
             elif opc_user == 7:
                 sigue = False
     
