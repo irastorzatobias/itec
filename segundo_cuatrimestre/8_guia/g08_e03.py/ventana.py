@@ -1,6 +1,6 @@
 class Ventana:
     def __init__(self):
-        self.open = True
+        self.open = False
     
     def abrirVentana(self):
         if self.open == True:

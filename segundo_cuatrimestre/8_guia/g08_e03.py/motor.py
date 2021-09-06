@@ -16,4 +16,4 @@ class Motor:
             self.encendido = False
     
     def getOnOff(self):
-        return self.encedido
+        return self.encendido
