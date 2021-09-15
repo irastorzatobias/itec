@@ -5,6 +5,6 @@ class Venado(Animal):
         super().__init__()
         self.identificador = identificador
         self.peso = peso
-        self.salud = self.setHealth(peso, 120)
+        self.setHealth(self.peso, 120)
 
 

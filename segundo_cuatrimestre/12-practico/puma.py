@@ -6,7 +6,7 @@ class Puma(Animal):
         self.identificador = identificador
         self.edad = edad
         self.peso = peso
-        self.salud = self.setHealth(peso,200)
+        self.setHealth(self.peso,200) # Determino la salud del animal
 
     def getAdulto(self):
         """ Devuelve si true puma es adulto, false si es cachorro"""
@@ -17,7 +17,7 @@ class Puma(Animal):
 
 
 if __name__ == '__main__':
-    ezequiel = Puma(12,22,203)
+    ezequiel = Puma(12,22,11)
     print(ezequiel.getHealth())
     print(ezequiel.getAdulto())
     

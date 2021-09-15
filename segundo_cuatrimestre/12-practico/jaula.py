@@ -19,6 +19,8 @@ class Jaula:
                 return f'Se agrego con exito el puma'
             else:
                 return f'No existe ese animal en nuestra base de datos'
+        else:
+            return f'Ya se agrego el maximo de animales posibles'
     
     def getAdultos(self):
         cantAdultos = 0
