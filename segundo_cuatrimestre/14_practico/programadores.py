@@ -7,9 +7,11 @@ class Persona:
     nombre: str
     
     def getName(self):
+        """ Getter para el nombre """
         return self.nombre  
     
     def setName(self,newName:str):
+        """ Setter para el nombre """
         self.nombre = newName
         
         
@@ -17,9 +19,11 @@ class Persona:
 class Empleado(Persona):
     # No se emplea constructor de sueldo ya que no lo pide la consigna
     def setSalario(self, salario:int):
+        """ Setter para el salario"""
         self.salario = salario
         
     def getSalario(self):
+        """ Getter para el salario"""
         try:
             return self.salario
         except:
@@ -69,10 +73,12 @@ class Empresa:
     
             
     def getProyectos(self):
+        """ Getter para los proyectos"""
         return self.listaProyectos
 
     
     def agEmp(self):    
+        """ Agrega empleado a la empresa """
         while True:
             # Establecer lenguaje del programador
             lenguajeManejado = input('Que lenguaje maneja el programador?: ')
@@ -99,6 +105,7 @@ class Empresa:
 
     
     def mostrarTodo(self):
+        """Devuelve nombre de la firma, rubro y cada uno de los empleados"""
         print(f'Bienvenido a {self.getNombreEmpresa()}')
         print(f'Nuestro rubro: {self.getRubro()}')
         if len(self.listaProgramadores) >= 1:
