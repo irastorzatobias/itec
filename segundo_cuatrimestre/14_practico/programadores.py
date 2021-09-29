@@ -115,6 +115,6 @@ class Empresa:
 
 if __name__ == '__main__':
     techcess = Empresa('Techcess','Informatica')
-    techcess.agEmp()
+    # techcess.agEmp()
     techcess.mostrarTodo()
         
