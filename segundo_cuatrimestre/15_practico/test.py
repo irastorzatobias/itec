@@ -1,6 +1,16 @@
-import random
+class Persona:
+    def __init__(self,nombre,apellido):
+        self.sexo = 'No binario'
+        self.nombre = nombre
+        self.apellido = apellido
+    
+    def getSexo(self):
+        return self.sexo    
 
-mylist = ["apple", "banana", "cherry"]
-random.shuffle(mylist)
+def main():
+    tobias = Persona('Tobias', 'Irastorza')
+    print(tobias.getSexo())
 
-print(mylist)
+
+if __name__ == '__main__':
+    main()
