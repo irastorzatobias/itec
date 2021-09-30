@@ -29,17 +29,12 @@ class Mazo:
         """ Mezcla las cartas """
         random.shuffle(self.cartas)
         
-    def dar_carta(self):
-        """ Da una carta"""
-        carta = self.cartas.pop()
-        return carta
-        
     def cargar_mazo(self):
         """ Carga mazo con todas las cartas y ya lo mezcla por defecto"""
         self.cartas = [Carta(p,v) for p in self.palos for v in self.valores]
         self.shuffle()
         
-        
+    
 
 @dataclass
 class Jugador:
@@ -61,7 +56,6 @@ class Jugador:
     def puntaje_con_ases(self):
         """ Ajusta el puntaje en caso de que el usuario tenga ases"""
         self.puntos = self.puntaje()
-        print(self.aces())
         for i in range(self.aces()):
             if self.puntos < 12:
                 self.puntos += 10 # sumo 10 porque anteriormente ya le sume 1 si es que habia una A
@@ -69,9 +63,12 @@ class Jugador:
     
     def setCarta(self, carta):
         self.mano.append(carta)
+
+
+        
     
     def perdio(self):
-        return self.puntaje_con_ases > 21
+        return self.puntaje_con_ases() > 21
 
 
 @dataclass
@@ -96,9 +93,9 @@ class Dealer(Jugador):
 @dataclass
 class Blackjack:  
     mazo = Mazo()
-    mazo.cargar_mazo()
     jugadores = [Jugador(), Dealer()]
     turnoJugador = True
+    jugando = True
     
     def mostrarJugadores(self):
         """ Muestra los jugadores """
@@ -108,18 +105,54 @@ class Blackjack:
     
     def repartir_cartas(self):
         """ Reparte 2 cartas para cada uno de los jugadores, ronda inicial"""
-        for j in self.jugadores:
-            for i in range(2):
-                j.setCarta(self.mazo.dar_carta())
+        self.mazo.cargar_mazo()
+        for i in range(2):
+            for j in self.jugadores:
+                self.hit(j)
                 
     def checkPerdio(self,jugador):
         """ Chequea si el jugador perdio"""
         if jugador.perdio():
              self.turnoJugador = False
-             
+             print('Jugador perdio')
+        else:
+            print('Jugador no perdio')
+    
+
+    def hit(self, jugador):
+        carta = self.mazo.cartas.pop()
+        jugador.mano.append(carta)             
         
+    def sigue(self, player):
+        respuesta = input("Hit or Stick? H/S: ")
+        if respuesta.lower() == "h":
+            self.hit(player)
+        if respuesta.lower() == "s":
+            print(f"Te quedas con {player.puntaje_con_ases()}\n")
+            self.turnoJugador = False
+    
+
+    
+    def play(self):
+        """ Determina un crupie, un jugador y comienza el juego, sin apuestas por el momento y solo de un jugador """
+        jugador1 = self.jugadores[0] # si pongo mas de un jugador tengo error, se me suman las cartas a todos los jugadores.
+        crupie = self.jugadores[1] # en este caso como jugadores[1] es crupie, no me pasa lo mismo, es clase diferente. 
+        self.repartir_cartas()
+        jugador1.mostrar_mano()    
+        crupie.mostrar_mano()
+        while self.jugando:
+            print(f'Su puntaje es de {jugador1.puntaje_con_ases()}')
+            c = self.sigue(jugador1)
+            if self.checkPerdio(jugador1):
+                jugador1.mostrar_mano()
+                print(f'Puntaje: {jugador1.puntaje_con_ases()}')
+                self.turnoJugador = False
+                break
+            else:
+                print(f'Se quedo con: {jugador1.puntaje_con_ases()}')
+                
             
-        
+
 
 
 
@@ -127,7 +160,10 @@ class Blackjack:
 
 def main():
     juego = Blackjack()
+    juego.play()
 
+
+    
 
 
     
@@ -136,4 +172,3 @@ def main():
     
 if __name__ == '__main__':
     main()
-           
