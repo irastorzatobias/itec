@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 import random
-from os import system
 @dataclass
 class Carta:
     palo:str
@@ -121,6 +120,7 @@ class Blackjack:
                 print("\nDealer perdio!")        
         
     def hit(self, jugador):
+        """ Da una carta al jugador pasado como parametro, si es el dealer se muestra la mano completa."""
         carta = self.mazo.cartas.pop()
         jugador.mano.append(carta)
         if isinstance(jugador, Dealer):
