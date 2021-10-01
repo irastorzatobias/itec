@@ -1,3 +1,5 @@
+# Blackjack de un jugador momentaneamente. Tobias Irastorza.
+
 from dataclasses import dataclass
 import random
 @dataclass
@@ -113,10 +115,10 @@ class Blackjack:
                 
     def checkPerdio(self, jugador):
         if jugador.perdio():
-            if isinstance(jugador, Jugador):
+            if type(jugador) == Jugador:
                 self.turnoJugador = False
                 print('\nJugador perdio')
-            if isinstance(jugador, Dealer):
+            else:
                 print("\nDealer perdio!")        
         
     def hit(self, jugador):
@@ -196,6 +198,7 @@ class Blackjack:
 def main():
     juego = Blackjack()
     juego.play()
+    
 
 
 
