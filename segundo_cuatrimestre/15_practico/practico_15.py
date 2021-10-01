@@ -124,18 +124,20 @@ class Blackjack:
         carta = self.mazo.cartas.pop()
         jugador.mano.append(carta)
         if isinstance(jugador, Dealer):
+            print('Dealer: ')
             jugador.mostrar_mano(True)
         else:
+            print('Jugador: ')
             jugador.mostrar_mano()
         self.checkPerdio(jugador)
         print(f"Puntaje de {type(jugador).__name__}: {jugador.puntaje_con_ases()}")
     
         
     def sigue(self, player):
-        respuesta = input("Hit or Stick? H/S: ")
-        if respuesta.lower() == "h":
+        respuesta = input("Te quedas o pedis otra carta? (q/p -- q para quedarse, p para pedir): ")
+        if respuesta.lower() == "p":
             self.hit(player)
-        if respuesta.lower() == "s":
+        if respuesta.lower() == "q":
             print(f"Te quedas con {player.puntaje_con_ases()}\n")
             self.turnoJugador = False
     
@@ -145,8 +147,8 @@ class Blackjack:
             print('Jugador gano')
         if jugador.puntaje_con_ases() == dealer.puntaje_con_ases():
             print('Empate')
-        if jugador.puntaje_con_ases() < dealer.puntaje_con_ases():
-            print('Jugador perdio')
+        if (jugador.puntaje_con_ases() < dealer.puntaje_con_ases()) and dealer.puntaje_con_ases() <= 21:
+            print('Dealer gano!')
 
 
     
@@ -168,17 +170,16 @@ class Blackjack:
             while self.turnoJugador:
                 self.sigue(jugador1)
             if not jugador1.perdio():
+                print('-- DEALER --')
                 crupie.mostrar_mano(True)
                 while not self.turnoJugador:
                     if crupie.puntaje_con_ases() < 17:
                         # Si crupie tiene menos de 17, juega
-                        print('Cartas dealer: ')
-                        crupie.mostrar_mano(True)
                         print('Juega dealer: ')
                         self.hit(crupie)
                     if crupie.puntaje_con_ases() >= 17 and not crupie.perdio():
                         # Si crupie tiene mas de 17 y no perdio, se queda ahi.
-                        print(f'Puntaje dealer final: {crupie.puntaje_con_ases()} ')
+                        print(f'Puntaje final: {crupie.puntaje_con_ases()} ')
                         break
                     if crupie.perdio():
                         # Si crupie perdio, el jugador gana
