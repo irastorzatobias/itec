@@ -36,10 +36,12 @@ class Mazo:
         
     
 
-@dataclass
 class Jugador:
-    mano = []
-    puntos = 0
+
+    def __init__(self):
+      self.mano = []
+      self.puntos = 0
+
     def mostrar_mano(self):
         """ Muestra las cartas del jugador """
         for c in self.mano:
@@ -93,7 +95,7 @@ class Dealer(Jugador):
 @dataclass
 class Blackjack:  
     mazo = Mazo()
-    jugadores = [Jugador(), Dealer()]
+    jugadores = [Jugador(), Dealer(), Jugador()]
     turnoJugador = True
     jugando = True
     
@@ -137,8 +139,13 @@ class Blackjack:
         """ Determina un crupie, un jugador y comienza el juego, sin apuestas por el momento y solo de un jugador """
         jugador1 = self.jugadores[0] # si pongo mas de un jugador tengo error, se me suman las cartas a todos los jugadores.
         crupie = self.jugadores[1] # en este caso como jugadores[1] es crupie, no me pasa lo mismo, es clase diferente. 
+        jugador2 = self.jugadores[2]
         self.repartir_cartas()
+        print('Mano jugador 1: ')
         jugador1.mostrar_mano()    
+        print('Mano jugador 2: ')
+        jugador2.mostrar_mano()
+        print('Mano crupie')       
         crupie.mostrar_mano()
         while self.jugando:
             print(f'Su puntaje es de {jugador1.puntaje_con_ases()}')
@@ -161,7 +168,7 @@ class Blackjack:
 def main():
     juego = Blackjack()
     juego.play()
-
+    
 
     
 
