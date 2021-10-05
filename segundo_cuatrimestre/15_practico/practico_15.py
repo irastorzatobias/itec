@@ -147,6 +147,8 @@ class Blackjack:
         """ Compara los puntajes y en base a eso, lanza mensaje sobre quien gano o si hubo empate"""
         if jugador.puntaje_con_ases() > dealer.puntaje_con_ases():
             print('Jugador gano')
+            print(f'Puntaje final jugador: {jugador.puntaje_con_ases()}')
+            jugador.mostrar_mano()
         if jugador.puntaje_con_ases() == dealer.puntaje_con_ases():
             print('Empate')
         if (jugador.puntaje_con_ases() < dealer.puntaje_con_ases()) and dealer.puntaje_con_ases() <= 21:
@@ -177,15 +179,17 @@ class Blackjack:
                 while not self.turnoJugador:
                     if crupie.puntaje_con_ases() < 17:
                         # Si crupie tiene menos de 17, juega
-                        print('Juega dealer: ')
+                        print('\n-- JUEGA DEALER --')
                         self.hit(crupie)
                     if crupie.puntaje_con_ases() >= 17 and not crupie.perdio():
                         # Si crupie tiene mas de 17 y no perdio, se queda ahi.
-                        print(f'Puntaje final: {crupie.puntaje_con_ases()} ')
+                        print(f'Puntaje final dealer: {crupie.puntaje_con_ases()} ')
                         break
                     if crupie.perdio():
                         # Si crupie perdio, el jugador gana
                         print('Jugador gana')
+                        print(f'Puntaje final jugador: {jugador1.puntaje_con_ases()}')
+                        jugador1.mostrar_mano()
                         break 
                 if not crupie.perdio():
                     # Si luego de lo anterior, el crupie no perdio, se comparan los puntajes
