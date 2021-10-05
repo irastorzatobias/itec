@@ -1,6 +1,7 @@
+# Blackjack de un jugador momentaneamente. Tobias Irastorza.
+
 from dataclasses import dataclass
 import random
-
 @dataclass
 class Carta:
     palo:str
@@ -37,11 +38,19 @@ class Mazo:
     
 
 class Jugador:
+<<<<<<< HEAD
 
     def __init__(self):
       self.mano = []
       self.puntos = 0
 
+=======
+    def __init__(self):
+        self.mano = []
+        self.puntos = 0
+    
+    
+>>>>>>> fab0323417673c82d8ead50894ceabcbac181a79
     def mostrar_mano(self):
         """ Muestra las cartas del jugador """
         for c in self.mano:
@@ -65,20 +74,18 @@ class Jugador:
     
     def setCarta(self, carta):
         self.mano.append(carta)
-
-
-        
     
     def perdio(self):
         return self.puntaje_con_ases() > 21
+            
 
-
-@dataclass
 class Dealer(Jugador):
     # si no inicializo mano nuevamente, se me repite el append, desconozco el motivo
-    mano = []
-    # Redefino el metodo mostrar mano
+    def __init__(self):
+        super().__init__()
+        self.mano = []
     
+    # Redefino el metodo mostrar mano
     def mostrar_mano(self,mostrar=False):
         """ Muestra la mano, en caso de que mostrar sea falso, muestra solo una carta, caso contrario, muestra ambas cartas"""
         if mostrar: 
@@ -92,6 +99,7 @@ class Dealer(Jugador):
 
 
 
+<<<<<<< HEAD
 @dataclass
 class Blackjack:  
     mazo = Mazo()
@@ -99,6 +107,15 @@ class Blackjack:
     turnoJugador = True
     jugando = True
     
+=======
+
+class Blackjack:
+    def __init__(self):  
+        self.mazo = []
+        self.jugadores = [Jugador(), Dealer()]
+        self.turnoJugador = True
+        
+>>>>>>> fab0323417673c82d8ead50894ceabcbac181a79
     def mostrarJugadores(self):
         """ Muestra los jugadores """
         print(f'Cantidad de jugadores: {len(self.jugadores)}')
@@ -107,36 +124,59 @@ class Blackjack:
     
     def repartir_cartas(self):
         """ Reparte 2 cartas para cada uno de los jugadores, ronda inicial"""
-        self.mazo.cargar_mazo()
         for i in range(2):
             for j in self.jugadores:
-                self.hit(j)
-                
-    def checkPerdio(self,jugador):
-        """ Chequea si el jugador perdio"""
-        if jugador.perdio():
-             self.turnoJugador = False
-             print('Jugador perdio')
-        else:
-            print('Jugador no perdio')
-    
+                card = self.mazo.cartas.pop()
+                j.mano.append(card)
+                 
 
+                
+    def checkPerdio(self, jugador):
+        if jugador.perdio():
+            if type(jugador) == Jugador:
+                self.turnoJugador = False
+                print('\nJugador perdio')
+            else:
+                print("\nDealer perdio!")        
+        
     def hit(self, jugador):
+        """ Da una carta al jugador pasado como parametro, si es el dealer se muestra la mano completa."""
         carta = self.mazo.cartas.pop()
-        jugador.mano.append(carta)             
+        jugador.mano.append(carta)
+        if isinstance(jugador, Dealer):
+            print('Dealer: ')
+            jugador.mostrar_mano(True)
+        else:
+            print('Jugador: ')
+            jugador.mostrar_mano()
+        self.checkPerdio(jugador)
+        print(f"Puntaje de {type(jugador).__name__}: {jugador.puntaje_con_ases()}")
+    
         
     def sigue(self, player):
-        respuesta = input("Hit or Stick? H/S: ")
-        if respuesta.lower() == "h":
+        respuesta = input("Te quedas o pedis otra carta? (q/p -- q para quedarse, p para pedir): ")
+        if respuesta.lower() == "p":
             self.hit(player)
-        if respuesta.lower() == "s":
+        if respuesta.lower() == "q":
             print(f"Te quedas con {player.puntaje_con_ases()}\n")
             self.turnoJugador = False
     
+    def comparar_puntaje(self, jugador, dealer):
+        """ Compara los puntajes y en base a eso, lanza mensaje sobre quien gano o si hubo empate"""
+        if jugador.puntaje_con_ases() > dealer.puntaje_con_ases():
+            print('Jugador gano')
+            print(f'Puntaje final jugador: {jugador.puntaje_con_ases()}')
+            jugador.mostrar_mano()
+        if jugador.puntaje_con_ases() == dealer.puntaje_con_ases():
+            print('Empate')
+        if (jugador.puntaje_con_ases() < dealer.puntaje_con_ases()) and dealer.puntaje_con_ases() <= 21:
+            print('Dealer gano!')
+
 
     
     def play(self):
         """ Determina un crupie, un jugador y comienza el juego, sin apuestas por el momento y solo de un jugador """
+<<<<<<< HEAD
         jugador1 = self.jugadores[0] # si pongo mas de un jugador tengo error, se me suman las cartas a todos los jugadores.
         crupie = self.jugadores[1] # en este caso como jugadores[1] es crupie, no me pasa lo mismo, es clase diferente. 
         jugador2 = self.jugadores[2]
@@ -146,29 +186,58 @@ class Blackjack:
         print('Mano jugador 2: ')
         jugador2.mostrar_mano()
         print('Mano crupie')       
+=======
+        self.mazo = Mazo()
+        jugador1 = self.jugadores[0] 
+        crupie = self.jugadores[1]
+        jugando = True
+        self.mazo.cargar_mazo()  
+        self.repartir_cartas() 
+        print('Mano crupie: ')
+>>>>>>> fab0323417673c82d8ead50894ceabcbac181a79
         crupie.mostrar_mano()
-        while self.jugando:
-            print(f'Su puntaje es de {jugador1.puntaje_con_ases()}')
-            c = self.sigue(jugador1)
-            if self.checkPerdio(jugador1):
-                jugador1.mostrar_mano()
-                print(f'Puntaje: {jugador1.puntaje_con_ases()}')
-                self.turnoJugador = False
-                break
-            else:
-                print(f'Se quedo con: {jugador1.puntaje_con_ases()}')
-                
-            
-
-
-
-
-
-
+        print('Mano jugador: ')
+        jugador1.mostrar_mano()
+        print(f'Puntaje actual: {jugador1.puntaje_con_ases()}')
+        while jugando:
+            # Comienza el juego
+            while self.turnoJugador:
+                self.sigue(jugador1)
+            if not jugador1.perdio():
+                print('-- DEALER --')
+                crupie.mostrar_mano(True)
+                while not self.turnoJugador:
+                    if crupie.puntaje_con_ases() < 17:
+                        # Si crupie tiene menos de 17, juega
+                        print('\n-- JUEGA DEALER --')
+                        self.hit(crupie)
+                    if crupie.puntaje_con_ases() >= 17 and not crupie.perdio():
+                        # Si crupie tiene mas de 17 y no perdio, se queda ahi.
+                        print(f'Puntaje final dealer: {crupie.puntaje_con_ases()} ')
+                        break
+                    if crupie.perdio():
+                        # Si crupie perdio, el jugador gana
+                        print('Jugador gana')
+                        print(f'Puntaje final jugador: {jugador1.puntaje_con_ases()}')
+                        jugador1.mostrar_mano()
+                        break 
+                if not crupie.perdio():
+                    # Si luego de lo anterior, el crupie no perdio, se comparan los puntajes
+                    self.comparar_puntaje(jugador1, crupie)
+            jugando = False # Se deja de
+    
+    
+                    
+    
 def main():
     juego = Blackjack()
     juego.play()
     
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> fab0323417673c82d8ead50894ceabcbac181a79
 
     
 
