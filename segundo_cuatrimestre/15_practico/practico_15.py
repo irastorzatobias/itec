@@ -38,19 +38,11 @@ class Mazo:
     
 
 class Jugador:
-<<<<<<< HEAD
-
-    def __init__(self):
-      self.mano = []
-      self.puntos = 0
-
-=======
     def __init__(self):
         self.mano = []
         self.puntos = 0
     
     
->>>>>>> fab0323417673c82d8ead50894ceabcbac181a79
     def mostrar_mano(self):
         """ Muestra las cartas del jugador """
         for c in self.mano:
@@ -99,15 +91,6 @@ class Dealer(Jugador):
 
 
 
-<<<<<<< HEAD
-@dataclass
-class Blackjack:  
-    mazo = Mazo()
-    jugadores = [Jugador(), Dealer(), Jugador()]
-    turnoJugador = True
-    jugando = True
-    
-=======
 
 class Blackjack:
     def __init__(self):  
@@ -115,7 +98,6 @@ class Blackjack:
         self.jugadores = [Jugador(), Dealer()]
         self.turnoJugador = True
         
->>>>>>> fab0323417673c82d8ead50894ceabcbac181a79
     def mostrarJugadores(self):
         """ Muestra los jugadores """
         print(f'Cantidad de jugadores: {len(self.jugadores)}')
@@ -176,17 +158,6 @@ class Blackjack:
     
     def play(self):
         """ Determina un crupie, un jugador y comienza el juego, sin apuestas por el momento y solo de un jugador """
-<<<<<<< HEAD
-        jugador1 = self.jugadores[0] # si pongo mas de un jugador tengo error, se me suman las cartas a todos los jugadores.
-        crupie = self.jugadores[1] # en este caso como jugadores[1] es crupie, no me pasa lo mismo, es clase diferente. 
-        jugador2 = self.jugadores[2]
-        self.repartir_cartas()
-        print('Mano jugador 1: ')
-        jugador1.mostrar_mano()    
-        print('Mano jugador 2: ')
-        jugador2.mostrar_mano()
-        print('Mano crupie')       
-=======
         self.mazo = Mazo()
         jugador1 = self.jugadores[0] 
         crupie = self.jugadores[1]
@@ -194,7 +165,6 @@ class Blackjack:
         self.mazo.cargar_mazo()  
         self.repartir_cartas() 
         print('Mano crupie: ')
->>>>>>> fab0323417673c82d8ead50894ceabcbac181a79
         crupie.mostrar_mano()
         print('Mano jugador: ')
         jugador1.mostrar_mano()
@@ -233,11 +203,8 @@ def main():
     juego = Blackjack()
     juego.play()
     
-<<<<<<< HEAD
-=======
 
 
->>>>>>> fab0323417673c82d8ead50894ceabcbac181a79
 
     
 
