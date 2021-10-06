@@ -15,11 +15,15 @@ while True:
         cantPersonas = int(values['-CANT-'])
         i = 1
         ePersonas = []
-        while int(cantPersonas) > 0:
-            edad = int(sg.popup_get_text(f'Edad de la persona {i} : '))
-            ePersonas.append(edad)
-            i += 1 
-            cantPersonas -= 1
-        sg.popup(f'Promedio edad personas: {sum(ePersonas) / len(ePersonas)}')   
+        try:
+            while int(cantPersonas) > 0:
+                edad = int(sg.popup_get_text(f'Edad de la persona {i} : '))
+                ePersonas.append(edad)
+                i += 1 
+                cantPersonas -= 1
+        except:
+            sg.popup(f'Ingreso un valor invalido')
+        else:
+            sg.popup(f'Promedio edad personas: {sum(ePersonas) / len(ePersonas)}')   
 
 window.close()
