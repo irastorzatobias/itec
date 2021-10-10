@@ -62,7 +62,7 @@ layout = [
             ]
 
 def createGUI(lay):
-    window = sg.Window('winTitle', lay) # return_keyboard_events=True
+    window = sg.Window('Mayores de edad', lay) # return_keyboard_events=True
 
     while True:
         event, values = window.read()

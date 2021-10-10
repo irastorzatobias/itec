@@ -9,7 +9,7 @@ layout = [
             ]
 
 def createGUI(lay):
-    window = sg.Window('winTitle', layout) # return_keyboard_events=True
+    window = sg.Window('Promedio desde lista', layout) # return_keyboard_events=True
     promedio = sum(numeros) / len(numeros)
     mPromedio = [n for n in numeros if n > promedio]
     while True:
