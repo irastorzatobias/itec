@@ -1,3 +1,4 @@
+# Igual al 8
 import PySimpleGUI as sg
 from dataclasses import dataclass
 
