@@ -16,7 +16,7 @@ class Empleado:
 
 layout_column = [
             [sg.Text('Nombre de la empresa')],
-            [sg.Text('Cantidad de empleados:'), sg.Input(key='cant_empleados', size=(5,1))],
+            [sg.Text('Empleados a cargar', size=(15,1)), sg.Spin([i for i in range(0, 100)],key='cant_empleados', size=(5,1))],
             [sg.Text(key='alert')],
             [sg.Button('Cargar'), sg.Button('Salir')]
             ]
@@ -34,6 +34,7 @@ while True:
     elif event == 'Cargar':
         try:
             cantEmpleados = int(values['cant_empleados'])
+            print(cantEmpleados)
             if cantEmpleados < 0:
                 window['alert'].Update('La cantidad de usuarios no puede ser menor a 0')
         except:
@@ -41,17 +42,20 @@ while True:
         else:
             emp = []
             i = 1
-            while cantEmpleados > 0:
-                nEmpleado = sg.popup_get_text(f'Nombre empleado {len(emp) + 1}: ')
-                sEmpleado = int(sg.popup_get_text(f'Sueldo empleado {len(emp) + 1}: '))
-                emp.append(Empleado(nEmpleado,sEmpleado))
-                cantEmpleados -= 1 
-                window['alert'].Update('')
-            if len(emp) > 0:
-                sMin = min([e.getSalario() for e in emp])
-                for e in emp:
-                    if e.getSalario() == sMin:
-                        window['alert'].Update(f'La persona con salario minimo es {e.getNombre()}, con un sueldo de ${e.getSalario()}') 
+            try:
+                while cantEmpleados > 0:
+                    nEmpleado = sg.popup_get_text(f'Nombre empleado {len(emp) + 1}: ')
+                    sEmpleado = int(sg.popup_get_text(f'Sueldo empleado {len(emp) + 1}: '))
+                    emp.append(Empleado(nEmpleado,sEmpleado))
+                    cantEmpleados -= 1 
+                    window['alert'].Update('')
+                if len(emp) > 0:
+                    sMin = min([e.getSalario() for e in emp])
+                    for e in emp:
+                        if e.getSalario() == sMin:
+                            window['alert'].Update(f'La persona con salario minimo es {e.getNombre()}, con un sueldo de ${e.getSalario()}') 
+            except:
+                sg.popup('Datos incorrectos')
                 
             
 window.close()
