@@ -10,10 +10,13 @@ def vocalMasRepetida(str):
         contador = auxStr.count(vocales[i]) # cuento la vocal mas repetida, vocal por vocal
         contVocales[vocales[i]] = contador
     m = max(contVocales.values()) # cuento el valor maximo dentro del diccionario de vocales
-    for k,v in contVocales.items():
-        if v == m:
-            result[k] = v
-    return result 
+    if m > 0:            
+        for k,v in contVocales.items():
+            if v == m:
+                result[k] = v
+        return result
+    else:
+        return 'No se ingreso texto con vocales'
     
     
     
@@ -33,10 +36,15 @@ def createGUI(lay):
             break
         elif event == 'OK':
             vFrecuencia = vocalMasRepetida(values['frase']) # vocal con mas frecuencia
-            displayText = 'Vocal/es mas repetida/s:\n'
-            for k,v in vFrecuencia.items():
-                displayText += f'Vocal: {k}, apariciones: {v} veces\n'
-            sg.popup(displayText)
+            # Si me devuelve el diccionario correspondiente, hago el popup con las vocales
+            if type(vFrecuencia) == dict:
+                displayText = 'Vocal/es mas repetida/s:\n'
+                for k,v in vFrecuencia.items():
+                    displayText += f'Vocal: {k}, apariciones: {v} veces\n'
+                sg.popup(displayText)
+            else:
+                # Si no me devuelve diccionario, significa que no hay vocales, popup con el error
+                sg.popup(vFrecuencia)
 
     window.close()
 
