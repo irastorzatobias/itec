@@ -7,9 +7,18 @@ def valInt(values, key):
         return False
     else:
         return True
+    
+def valFloat(values, key):
+    try:
+        float(values[key])
+    except:
+        return False
+    else:
+        return True
 
 
 def firstLayout():
+    " Primer layout con sus acciones correspondientes"
     filas = [
                 [sg.Text('Cantidad de personas a cargar')],
                 [sg.Input(key='cantP')],
@@ -18,6 +27,7 @@ def firstLayout():
     return filas
 
 def secondLayout(values):
+    """ Segundo layout con sus acciones correspondientes """
     filas = [
         [
             sg.Text(f"Edad de la persona {fila+1}: ", size=(30, 1)),
@@ -42,6 +52,7 @@ def secondLayout(values):
                 window2['promedio'].update(f'Promedio de las edades ingresadas: {sum(edades) / len(edades)}')
     
 def gui(lay):
+    """ Programa en general """
     window = sg.Window('winTitle', firstLayout()) 
     while True:
         event, values = window.read()
