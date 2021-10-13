@@ -5,8 +5,7 @@ layout = [
             [sg.Text('Numero: ', key='-NUM-'), sg.Input(key='-IN-')],
             [sg.Text('Numero ingresado'),sg.Text(key='-OUT-')],
             [sg.Text('Cantida de numeros ingresados: ', key='-CANT-')],
-            [sg.Button('ENTER'), sg.Button('Exit')],
-            [sg.Button('Submit', visible=False, bind_return_key=True)]
+            [sg.Button('Cargar',bind_return_key=True),sg.Button('Reset'),sg.Button('Exit')],
             ]
 
 window = sg.Window('winTitle', layout) # return_keyboard_events=True
@@ -18,7 +17,7 @@ while True:
     print(values['-IN-'])
     if event in [None, 'Exit']:
         break
-    elif event == 'ENTER' or event == 'Submit':
+    elif event == 'Cargar':
         try:
             num = int(values['-IN-'])
             window['-OUT-'].update(num)
@@ -26,6 +25,10 @@ while True:
             window['-CANT-'].update(f'Cantidad numeros ingresados: {len(nums)}')
         except:
             window['-OUT-'].update('No ingreso un numero')
+    elif event == 'Reset':
+        nums = []
+        window['-OUT-'].update('')
+        window['-CANT-'].update(f'Cantidad numeros ingresados: {len(nums)}')
     if len(nums) == 10:
         sg.popup(f'Numeros mayores a 23 ingresados: {[n for n in nums if n > 23]}')
 

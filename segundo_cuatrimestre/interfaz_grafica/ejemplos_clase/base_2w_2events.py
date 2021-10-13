@@ -8,8 +8,8 @@ def firstLayout():
         [
             sg.Text("Cuántas personas se van a cargar: ", size=(30, 1)),
             sg.Input(key="entero_cantidad", size=(3, 1)),
-        ],
-        [sg.Button("Ok", bind_return_key=True), sg.T("", key="msg", size=(30, 1))],
+        ], # primer fila
+        [sg.Button("Ok", bind_return_key=True), sg.T("", key="msg", size=(30, 1))], # segunda fila
     ]
     return filas
 
@@ -51,7 +51,7 @@ def main(firstWindow):
                 break
             if validate_input(window, values, msg):
                 fAction(window, values)
-
+                
     def action2(secondWindow, values2):
         lista = [int(x) for x in values2.values()]
         promedio = f"El promedio es {sum(lista) / len(lista)}"
