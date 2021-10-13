@@ -1,5 +1,13 @@
 import PySimpleGUI as sg
 
+def valInt(values, key):
+    try:
+        int(values[key])
+    except:
+        return False
+    else:
+        return True
+
 
 def firstLayout():
     filas = [
@@ -18,7 +26,20 @@ def secondLayout(values):
         for fila in range(int(values["cantP"]))
     ]
     filas.append([sg.Button('Ok',  bind_return_key=True), sg.T(key=('promedio'))])
-    return filas
+    window2 = sg.Window('segunda ventana',filas)
+    while True:
+        event2,values2 = window2.read()
+        " Dejo abierta solo la segunda pestaña"
+        if event2 in [sg.WIN_CLOSED, 'Salir']:  
+            break
+        elif event2 in 'Ok':
+            try:
+                # obtengo las edades
+                edades = [int(x) for x in values2.values()]
+            except:
+                sg.popup('Falto un dato de ingresar, o no ingreso entero')
+            else:
+                window2['promedio'].update(f'Promedio de las edades ingresadas: {sum(edades) / len(edades)}')
     
 def gui(lay):
     window = sg.Window('winTitle', firstLayout()) 
@@ -27,25 +48,10 @@ def gui(lay):
         if event in [None, 'Exit']:
             break
         elif event in 'OK':
-            try:
-                int(values['cantP'])
-            except:
-                sg.popup('No ingreso un entero')
+            if not valInt(values, 'cantP'):
+                sg.popup('No ingreso entero')
             else:
-                window2 = sg.Window('segunda ventana',secondLayout(values))
-                while True:
-                    event2,values2 = window2.read()
-                    " Dejo abierta solo la segunda pestaña"
-                    if event2 in [sg.WIN_CLOSED, 'Salir']:
-                        window2.close()
-                        break
-                    elif event2 in 'Ok':
-                        try:
-                            edades = [int(x) for x in values2.values()]
-                        except:
-                            sg.popup('Falto un dato de ingresar, o no ingreso entero')
-                        else:
-                            window2['promedio'].update(f'Promedio de las edades ingresadas: {sum(edades) / len(edades)}')
+                secondLayout(values)
     window.close()
                         
                         
