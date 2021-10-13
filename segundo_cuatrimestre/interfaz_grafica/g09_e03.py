@@ -1,29 +1,57 @@
 import PySimpleGUI as sg
 
-layout = [
-            [sg.Text('Cantidad de personas a cargar: '), sg.Input(key='-CANT-')],
-            [sg.Button('OK'), sg.Button('Exit')]
-            ]
 
-window = sg.Window('winTitle', layout) # return_keyboard_events=True
+def firstLayout():
+    filas = [
+                [sg.Text('Cantidad de personas a cargar')],
+                [sg.Input(key='cantP')],
+                [sg.Button('OK',  bind_return_key=True), sg.Button('Exit')]
+                ]
+    return filas
 
-while True:
-    event, values = window.read()
-    if event in [None, 'Exit']:
-        break
-    elif event == 'OK':
-        cantPersonas = int(values['-CANT-'])
-        i = 1
-        ePersonas = []
-        try:
-            while int(cantPersonas) > 0:
-                edad = int(sg.popup_get_text(f'Edad de la persona {i} : '))
-                ePersonas.append(edad)
-                i += 1 
-                cantPersonas -= 1
-        except:
-            sg.popup(f'Ingreso un valor invalido')
-        else:
-            sg.popup(f'Promedio edad personas: {sum(ePersonas) / len(ePersonas)}')   
+def secondLayout(values):
+    filas = [
+        [
+            sg.Text(f"Edad de la persona {fila+1}: ", size=(30, 1)),
+            sg.Input(key=f"entero_edad_{fila+1}: ", size=(3, 1)),
+        ]
+        for fila in range(int(values["cantP"]))
+    ]
+    filas.append([sg.Button('Ok',  bind_return_key=True), sg.T(key=('promedio'))])
+    return filas
+    
+def gui(lay):
+    window = sg.Window('winTitle', firstLayout()) 
+    while True:
+        event, values = window.read()
+        if event in [None, 'Exit']:
+            break
+        elif event in 'OK':
+            try:
+                int(values['cantP'])
+            except:
+                sg.popup('No ingreso un entero')
+            else:
+                window2 = sg.Window('segunda ventana',secondLayout(values))
+                while True:
+                    event2,values2 = window2.read()
+                    " Dejo abierta solo la segunda pestaña"
+                    if event2 in [sg.WIN_CLOSED, 'Salir']:
+                        window2.close()
+                        break
+                    elif event2 in 'Ok':
+                        try:
+                            edades = [int(x) for x in values2.values()]
+                        except:
+                            sg.popup('Falto un dato de ingresar, o no ingreso entero')
+                        else:
+                            window2['promedio'].update(f'Promedio de las edades ingresadas: {sum(edades) / len(edades)}')
+    window.close()
+                        
+                        
 
-window.close()
+def main():
+    gui(firstLayout())
+
+if __name__ == '__main__':
+    main()

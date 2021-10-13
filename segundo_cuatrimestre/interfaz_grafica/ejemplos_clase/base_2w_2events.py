@@ -22,6 +22,7 @@ def secondLayout(values):
         ]
         for fila in range(int(values["entero_cantidad"]))
     ]
+    # Acá si hace falta el append porque es un boton que va al final y no se repite
     filas.append(
         [sg.Button("Ok", bind_return_key=True), sg.T("", key="salida", size=(30, 1))]
     )
@@ -50,24 +51,26 @@ def main(firstWindow):
             if event in (sg.WIN_CLOSED, "Exit"):
                 break
             if validate_input(window, values, msg):
+                # fAction le pasa a la ventana siguiente los values de esta
                 fAction(window, values)
                 
     def action2(secondWindow, values2):
+        """ Saco promedio, secondWindow es la segunda ventana, values2 los valores de la segunda ventana"""
         lista = [int(x) for x in values2.values()]
         promedio = f"El promedio es {sum(lista) / len(lista)}"
         secondWindow["salida"].update(str(promedio))
 
     def action1(firstWindow, values1):
+        """ Updateo msg primer ventana, abro la segunda."""
         firstWindow["msg"].update("Abrí la segunda ventana")
         secondWindow = sg.Window(
-            "Edades", layout=secondLayout(values1), location=(200, 200)
-        )
+            "Edades", layout=secondLayout(values1))
         wLoop(secondWindow, action2, "salida")
 
     wLoop(firstWindow, action1, "msg")
 
 
 if __name__ == "__main__":
-    firstWindow = sg.Window("Promediar edades", firstLayout(), location=(0, 0))
+    firstWindow = sg.Window("Promediar edades", firstLayout())
     main(firstWindow)
     firstWindow.close()
