@@ -1,4 +1,5 @@
 import sqlite3 as sql
+from sqlite3 import Error
 
 # TIPOS DE DATOS SQLITE3
 # text: se usa para almacenar cadenas de caracteres. Una cadena es una secuencia de caracteres. Se coloca entre comillas (simples); ejemplo: 'Hola', 'Juan Perez'. El tipo "text" define una cadena de longitud variable.
@@ -18,13 +19,14 @@ def createDB(name):
     except:
         print('La base de datos ya esta creada')
         
+        
 def createTable(nameDb, table): # se podria agregar metodo fields
     """ Recibe el nombre de la base de datos y nombre de la tabla"""
     try:
         conn = sql.connect(f'{nameDb}.db')
         cursor = conn.cursor()
         instruccion = f"""CREATE TABLE {table} (
-            name text,
+            name text NOT NULL UNIQUE,
             age integer
             )"""
         cursor.execute(instruccion)
@@ -32,8 +34,8 @@ def createTable(nameDb, table): # se podria agregar metodo fields
         cursor.close()
         conn.close()
         print('Tabla creada con exito')
-    except:
-        print('Error conexion BD o tabla ya existente')
+    except Error:
+        print(Error)
 
 
 def insertRow(nameDb,table,nombre, edad):
@@ -48,8 +50,8 @@ def insertRow(nameDb,table,nombre, edad):
         cursor.close()
         conn.close()
         print(f'Se agrego {nombre} a la tabla')
-    except:
-        print('Error conexion BD o datos ya existentes') 
+    except Error:
+        print(Error.args)
 
 
 def readRows(nameDb, table):
@@ -64,8 +66,8 @@ def readRows(nameDb, table):
         cursor.close()
         conn.close()
         print(datos)
-    except:
-        print('Error conexion BD o tabla no existente') 
+    except Error:
+        print(Error)
         
 def insertRows(nameDb, table, listPersonas):
     """ Inserta varios datos tras pasarle una tupla a la funcion """
@@ -78,8 +80,8 @@ def insertRows(nameDb, table, listPersonas):
         conn.commit() # realizar los cambios
         cursor.close()
         conn.close()
-    except:
-        print('Error conexion BD o datos ya existentes') 
+    except Error:
+        print(Error)
 
 
 def readOrdered(nameDb, table, field):
@@ -93,9 +95,8 @@ def readOrdered(nameDb, table, field):
         cursor.close()
         conn.close()
         print(datos)
-    except:
-        print('Error conexion BD o tabla no existente')  
-
+    except Error:
+        print(Error)
 
 def search(nameDb, table, condition):
     """ Busqueda de datos a partir de una condicion """
@@ -109,8 +110,8 @@ def search(nameDb, table, condition):
         cursor.close()
         conn.close()
         print(datos)
-    except:
-        print('Error conexion BD o tabla no existente')
+    except Error as er:
+        print(Error)
 
 
 def updateFields():
@@ -131,7 +132,14 @@ def deleteItem(name, table, condition):
     cursor.execute(instruccion)
     conn.commit() # realizar los cambios
     conn.close()
-    
+
+def deleteTable(name, table):
+    conn = sql.connect(f'{name}.db')
+    cursor = conn.cursor()
+    instruccion = f"""DROP TABLE {table}"""
+    cursor.execute(instruccion)
+    conn.commit() # realizar los cambios
+    conn.close()
     
 
 def main():
@@ -150,8 +158,8 @@ def main():
     # search('personas', 'humano',"name like 'T%'") # porcentaje para ver los nombres que empiezan por T
     # updateFields()
     # deleteItem('personas','humano',"name like 'T%'")
-    insertRow('personas','humano','Tobias',21)
-    readRows('personas','humano')
+    # readRows('personas','humano')
+
     
     
     
