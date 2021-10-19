@@ -1,4 +1,4 @@
-columns example
+
 import PySimpleGUI as sg
 #set the theme for the screen/window
 sg.theme("DarkTanBlue")

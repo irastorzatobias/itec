@@ -28,6 +28,7 @@ def main():
     nombre, pedido = login(), None
     while True:
         window, event, values = sg.read_all_windows()
+        print(event, values)
         # Primer layout
         if window == nombre and event == 'Salir' or event == sg.WIN_CLOSED:
             break
