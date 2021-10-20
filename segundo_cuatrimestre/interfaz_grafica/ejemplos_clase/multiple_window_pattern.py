@@ -9,17 +9,28 @@ import PySimpleGUI as sg
 def make_win1():
     layout = [[sg.Text('This is the FIRST WINDOW'), sg.Text('      ', k='-OUTPUT-')],
               [sg.Text('Click Popup anytime to see a modal popup')],
-              [sg.Button('Launch 2nd Window'), sg.Button('Popup'), sg.Button('Exit')]]
+              [sg.Button('Launch 2nd Window'),sg.B('Launch 3rd Window'), sg.Button('Popup')]]
     return sg.Window('Window Title', layout, location=(800,600), finalize=True)
+
+
+
 def make_win2():
     layout = [[sg.Text('The second window')],
               [sg.Input(key='-IN-', enable_events=True)],
               [sg.Text(size=(25,1), k='-OUTPUT-')],
               [sg.Button('Erase'), sg.Button('Popup'), sg.Button('Exit')]]
     return sg.Window('Second Window', layout, finalize=True)
-window1, window2 = make_win1(), None        # start off with 1 window open
+
+def make_win3():
+    layout = [[sg.Text('The second window')],
+              [sg.Input(key='-IN-', enable_events=True)],
+              [sg.Text(size=(25,1), k='-OUTPUT-')],
+              [sg.Button('Erase'), sg.Button('Popup'), sg.Button('Exit')]]
+    return sg.Window('Second Window', layout, finalize=True)
+window1, window2,window3 = make_win1(), None, None        # start off with 1 window open
 while True:             # Event Loop
     window, event, values = sg.read_all_windows()
+    print(values)
     if event == sg.WIN_CLOSED or event == 'Exit':
         window.close()
         if window == window2:       # if closing win 2, mark as closed
@@ -35,4 +46,8 @@ while True:             # Event Loop
     elif event == 'Erase':
         window['-OUTPUT-'].update('')
         window['-IN-'].update('')
+    elif event == 'Launch 3rd Window':
+        window3 = make_win3()
+
+        
 window.close()

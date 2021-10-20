@@ -5,11 +5,11 @@ import PySimpleGUI as sg
 def login():
     col1 = [[sg.T('Hola amigos')]]
     col2 = [
-        [sg.T('None')],
+        [sg.T('None', size=(20,1),font=('Arial',24))],
         [sg.I(key='Usuario')],
         [sg.Button('Continuar'), sg.Button('Salir')]
     ]
-    layout = [[sg.Stretch(),sg.Column(col1, element_justification='l'),sg.Column(col2, element_justification='r'), sg.Stretch(),]]
+    layout = [[sg.Column(col1, element_justification='c'),sg.Column(col2, element_justification='c')]]
     
     return sg.Window('Login', layout, finalize=True, size=(640,480))
 # Loop lectura eventos
