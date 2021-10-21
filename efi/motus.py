@@ -2,6 +2,7 @@ import PySimpleGUI as sg
 
 
 people = ['Tobias Irastorza', 'Lautaro Irastorza', 'Pepito Irastorza']
+routines = ['Dia 1', 'Dia 2', 'Dia 3', 'Dia 4', 'Dia 5']
 
 # Layout principal
 def principal():
@@ -10,6 +11,7 @@ def principal():
                 [sg.Text('MOTUS',font=('Arial',26))],
                 [sg.B('TURNOS', size=(20,1))],
                 [sg.B('TURNOS DEL DIA', size=(20,1))],
+                [sg.B('RUTINAS', size=(20,1))],
                 [sg.B('ALUMNOS', size=(20,1))],
                 ]
     layout = [
@@ -44,7 +46,7 @@ def alumnos():
         [sg.Column(columna, element_justification='c', p=(0,150))]
     ]
     return sg.Window('TURNOS',layout,size=(800,600),finalize=True, element_justification='c')
-    pass
+    
 
 # En un principio es para modificar a los alumnos
 def crud():
@@ -52,16 +54,39 @@ def crud():
 
 # Layout de rutinas, display y CRUD tambien en lo posible
 def rutinas():
-    pass
+    columna = [
+                [sg.Text('RUTINAS',font=('Arial',40))],
+                [sg.Listbox(routines, size=(20,len(routines)), key='rutina')],
+                [sg.B('Agregar'), sg.B('Modificar'), sg.B('Borrar')],
+                [sg.B('Ver', size=(7,1)),sg.B('Volver', size=(7,1))]
+                ]
+    layout = [
+        [sg.Column(columna, element_justification='c', p=(0,150))]
+    ]
+    return sg.Window('RUTINAS',layout,size=(800,600),finalize=True, element_justification='c')
     
+def display_routine(value):
+    columna = [
+                [sg.Text(f'RUTINA {value["rutina"]}',font=('Arial',40))],
+                [sg.B('Ver', size=(7,1)),sg.B('Volver', size=(7,1))]
+                ]
+    layout = [
+        [sg.Column(columna, element_justification='c', p=(0,150))]
+    ]
+    return sg.Window('RUTINAS',layout,size=(800,600),finalize=True, element_justification='c')
+    pass
 
 sg.theme('DarkBrown4')
 
 def main():
     add = False
     modify = False
-
-    principal_layout, turnos_layout, alumnos_layout, crud_layout, rutinas_layout = principal(), None, None, None, None
+    # layouts de control
+    principal_layout, turnos_layout, alumnos_layout, rutinas_layout = principal(), None, None, None
+    #layouts de display
+    rutina_layout_display = None
+    #layouts de modificacion
+    crud_layout = None
     while True:
         window,event, values = sg.read_all_windows()
         if event == 'Exit' or event == sg.WIN_CLOSED:
@@ -74,6 +99,8 @@ def main():
         if event == 'Volver' and window == turnos_layout:
             principal_layout.un_hide()
             turnos_layout.hide()
+        if event == 'TURNOS DEL DIA':
+            sg.popup('No hay turnos para hoy')
         # Alumnos
         if event == 'ALUMNOS' and window == principal_layout:
             alumnos_layout = alumnos()
@@ -81,7 +108,15 @@ def main():
         if event == 'Volver' and window == alumnos_layout:
             principal_layout.un_hide()
             alumnos_layout.hide()
-            
+        # Rutinas
+        if event == 'RUTINAS':
+            rutinas_layout = rutinas()
+            principal_layout.hide()
+        if event == 'Volver' and window == rutinas_layout:
+            principal_layout.un_hide()
+            rutinas_layout.hide()
+        if event == 'Ver' and window == rutinas_layout:
+            sg.popup(f'Rutina {values["rutina"]}\nPress Banca 5x5\nSentadila 5x5\nPeso muerto 5x5\n')
         
             
         
