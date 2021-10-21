@@ -1,3 +1,4 @@
+from tkinter.font import BOLD
 import PySimpleGUI as sg
 
 
@@ -8,14 +9,14 @@ routines = ['Dia 1', 'Dia 2', 'Dia 3', 'Dia 4', 'Dia 5']
 def principal():
     """ Layout principal """
     columna = [
-                [sg.Text('MOTUS',font=('Arial',26),pad=(0,(0,25)))],
+                [sg.Text('MOTUS',font=('Arial',40,BOLD),pad=(0,(0,25)))],
                 [sg.B('TURNOS', size=(20,1), pad=(0,(0,25)))],
-                [sg.B('TURNOS DEL DIA', size=(20,1), pad=(0,(0,25)))],
                 [sg.B('RUTINAS', size=(20,1), pad=(0,(0,25)))],
                 [sg.B('ALUMNOS', size=(20,1), pad=(0,(0,25)))],
+                [sg.B('GESTION CUOTAS', size=(20,1), pad=(0,(0,25)))],
                 ]
     layout = [
-                [sg.Column(columna,element_justification='c',p=(0,150))],
+                [sg.Column(columna,element_justification='c',pad=(0,100))],
                 ]
     return sg.Window('MOTUS TRAINING', layout,size=(800,600),finalize=True, element_justification='c')
 
@@ -24,12 +25,13 @@ def turnos():
     columna = [
                 [sg.Text('TURNERO',font=('Arial',26), pad=(0,(0,25)))],
                 [sg.B('Anotar turno', size=(20,1), pad=(0,(0,25)))],
-                [sg.B('Ver disponibilidad de turnos', size=(20,1), pad=(0,(0,25)))],
+                [sg.B('Turnos del dia', size=(20,1), pad=(0,(0,25)))],
+                [sg.B('Ver turnos', size=(20,1), pad=(0,(0,25)))],
                 [sg.B('Borrar turnos', size=(20,1), pad=(0,(0,25)))],
                 [sg.B('Volver', size=(20,1), pad=(0,(0,25)))],
                 ]
     layout = [
-        [sg.Column(columna, element_justification='c', p=(0,150))]
+        [sg.Column(columna, element_justification='c', pad=(0,150))]
     ]
     return sg.Window('TURNOS',layout,size=(800,600),finalize=True, element_justification='c' )
 
@@ -61,7 +63,7 @@ def rutinas():
                 [sg.B('Ver', size=(7,1)),sg.B('Volver', size=(7,1))]
                 ]
     layout = [
-        [sg.Column(columna, element_justification='c', p=(0,150))]
+        [sg.Column(columna, element_justification='c', pad=(0,150))]
     ]
     return sg.Window('RUTINAS',layout,size=(800,600),finalize=True, element_justification='c')
     
@@ -71,7 +73,7 @@ def display_routine(value):
                 [sg.B('Ver', size=(7,1)),sg.B('Volver', size=(7,1))]
                 ]
     layout = [
-        [sg.Column(columna, element_justification='c', p=(0,150))]
+        [sg.Column(columna, element_justification='c', pad=(0,150))]
     ]
     return sg.Window('RUTINAS',layout,size=(800,600),finalize=True, element_justification='c')
     pass
