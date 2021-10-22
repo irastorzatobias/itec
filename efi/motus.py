@@ -2,13 +2,37 @@ from tkinter.font import BOLD
 import PySimpleGUI as sg
 
 
-people = ['Tobias Irastorza', 'Lautaro Irastorza', 'Pepito Irastorza']
-routines = ['Dia 1', 'Dia 2', 'Dia 3', 'Dia 4', 'Dia 5']
+people = [{
+    'nombre': 'Tobias Irastorza',
+    'turnos': ['Hoy', 'Mañana', 'Pasado']
+},
+{        
+    'nombre': 'Lautaro Irastorza',
+    'turnos': ['Lunes', 'Miercoles', 'Viernes']
+},
+{        
+    'nombre': 'Lautaro Martinez',
+    'turnos': ['Lunes', 'Jueves','Viernes']
+},
+]
+routines = ['Dia 1', 'Dia 2', 'Dia 3', 'Dia 4', 'Dia 5'] 
 
+peoples_name = [x['nombre'] for x in people]
+
+# Funciones utiles no relacionadas al LAYOUT
 def hide_unhide(actual, previous):
     """ Esconde la ventana actual y muestra la ventana anterior pasada como"""
     previous.un_hide()
     actual.hide()
+    
+def ver_turno(persona):
+    text = ''
+    for k,v in persona.items():
+        if k in 'turnos':
+            text += f'{v}\n'
+        else:
+            text += f'{v} -- '
+    return text
 
 # Layout principal
 def principal():
@@ -45,7 +69,7 @@ def turnos():
 def alumnos():
     columna = [
                 [sg.Text('ALUMNOS',font=('Arial',40), pad=(0,(0,25)))],
-                [sg.Listbox(people, size=(20,20), key='alumno', pad=(0,(0,25)))],
+                [sg.Listbox(peoples_name, size=(20,20), key='alumno', pad=(0,(0,25)))],
                 [sg.B('Agregar'), sg.B('Modificar'), sg.B('Borrar'),],
                 [sg.B('Ver', size=(7,1)),sg.B('Volver', size=(7,1))]
                 ]
@@ -107,6 +131,14 @@ def main():
             hide_unhide(turnos_layout, principal_layout)
         if event == 'TURNOS DEL DIA':
             sg.popup('No hay turnos para hoy')
+        if event == 'Anotar turno' and window == turnos_layout:
+            pass
+        if event == 'Ver turnos' and window == turnos_layout:
+            texto = ''
+            for p in people:
+                texto += ver_turno(p)
+            sg.popup(texto)
+            pass
         # Alumnos
         if event == 'ALUMNOS' and window == principal_layout:
             alumnos_layout = alumnos()
@@ -131,3 +163,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # print(peoples_name)
