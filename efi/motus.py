@@ -5,6 +5,11 @@ import PySimpleGUI as sg
 people = ['Tobias Irastorza', 'Lautaro Irastorza', 'Pepito Irastorza']
 routines = ['Dia 1', 'Dia 2', 'Dia 3', 'Dia 4', 'Dia 5']
 
+def hide_unhide(actual, previous):
+    """ Esconde la ventana actual y muestra la ventana anterior pasada como"""
+    previous.un_hide()
+    actual.hide()
+
 # Layout principal
 def principal():
     """ Layout principal """
@@ -23,7 +28,7 @@ def principal():
 # Layout de los turnos
 def turnos():
     columna = [
-                [sg.Text('TURNERO',font=('Arial',26), pad=(0,(0,25)))],
+                [sg.Text('TURNERO',font=('Arial',40,BOLD), pad=(0,(0,25)))],
                 [sg.B('Anotar turno', size=(20,1), pad=(0,(0,25)))],
                 [sg.B('Turnos del dia', size=(20,1), pad=(0,(0,25)))],
                 [sg.B('Ver turnos', size=(20,1), pad=(0,(0,25)))],
@@ -31,7 +36,7 @@ def turnos():
                 [sg.B('Volver', size=(20,1), pad=(0,(0,25)))],
                 ]
     layout = [
-        [sg.Column(columna, element_justification='c', pad=(0,150))]
+        [sg.Column(columna, element_justification='c', pad=(0,100))]
     ]
     return sg.Window('TURNOS',layout,size=(800,600),finalize=True, element_justification='c' )
 
@@ -70,7 +75,7 @@ def rutinas():
 def display_routine(value):
     columna = [
                 [sg.Text(f'RUTINA {value["rutina"][0]}',font=('Arial',40))],
-                [sg.B('Ver', size=(7,1)),sg.B('Volver', size=(7,1))]
+                [sg.B('Volver', size=(7,1))]
                 ]
     layout = [
         [sg.Column(columna, element_justification='c', pad=(0,150))]
@@ -99,8 +104,7 @@ def main():
             turnos_layout = turnos()
             principal_layout.hide()
         if event == 'Volver' and window == turnos_layout:
-            principal_layout.un_hide()
-            turnos_layout.hide()
+            hide_unhide(turnos_layout, principal_layout)
         if event == 'TURNOS DEL DIA':
             sg.popup('No hay turnos para hoy')
         # Alumnos
@@ -108,22 +112,19 @@ def main():
             alumnos_layout = alumnos()
             principal_layout.hide()
         if event == 'Volver' and window == alumnos_layout:
-            principal_layout.un_hide()
-            alumnos_layout.hide()
+            hide_unhide(alumnos_layout, principal_layout)
         # Rutinas
         if event == 'RUTINAS':
             rutinas_layout = rutinas()
             principal_layout.hide()
         if event == 'Volver' and window == rutinas_layout:
-            principal_layout.un_hide()
-            rutinas_layout.hide()
+            hide_unhide(rutinas_layout, principal_layout)
         # Viendo rutina
         if event == 'Ver' and window == rutinas_layout:
             rutina_layout_display = display_routine(values)
             rutinas_layout.hide()
         if event == 'Volver' and window == rutina_layout_display:
-            rutina_layout_display.hide()
-            rutinas_layout.un_hide()
+            hide_unhide(rutina_layout_display, rutinas_layout)
             
         
                 
