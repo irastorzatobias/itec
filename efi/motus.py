@@ -118,8 +118,8 @@ def add_turno():
 # Layout de los alumnos 
 def alumnos():
     columna = [
-                [sg.Text('ALUMNOS',font=('Arial',40), pad=(0,(0,25)))],
-                [sg.Listbox(peoples_name, size=(20,20), key='alumno', pad=(0,(0,25)))],
+                [sg.Text('ALUMNOS',font=('webhostinghub-glyphs',35,'bold'), pad=(0,(0,25)))],
+                [sg.Listbox(peoples_name, size=(20,20), key='alumno',font=('verdana',10,'bold'), pad=(0,(0,25)))],
                 [sg.B('Agregar', font=('webhostinghub-glyphs',10,'bold')), sg.B('Modificar',font=('webhostinghub-glyphs',10,'bold')), sg.B('Borrar',font=('webhostinghub-glyphs',10,'bold')),],
                 [sg.B('Ver', size=(7,1), font=('webhostinghub-glyphs',10,'bold'),),sg.B('Volver', size=(7,1), font=('webhostinghub-glyphs',10,'bold'),)]
                 ]
@@ -136,8 +136,8 @@ def crud():
 # Layout de rutinas, display y CRUD tambien en lo posible
 def rutinas():
     columna = [
-                [sg.Text('RUTINAS',font=('Arial',40))],
-                [sg.Listbox(routines, size=(20,len(routines)), key='rutina', pad=(0,(0,25)))],
+                [sg.Text('RUTINAS',font=('webhostinghub-glyphs',35,'bold'),p=(0,(0,25)))],
+                [sg.Listbox(routines, size=(20,len(routines)),font=('verdana',10,'bold'), key='rutina', pad=(0,(0,25)))],
                 [sg.B('Agregar', font=('webhostinghub-glyphs',10,'bold')), sg.B('Modificar',font=('webhostinghub-glyphs',10,'bold')), sg.B('Borrar',font=('webhostinghub-glyphs',10,'bold'))],
                 [sg.B('Ver', size=(7,1), font=('webhostinghub-glyphs',10,'bold')),sg.B('Volver',font=('webhostinghub-glyphs',10,'bold'), size=(7,1))]
                 ]
