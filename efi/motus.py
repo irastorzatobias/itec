@@ -5,20 +5,28 @@ sg.theme('DarkBrown4')
 
 people = [{
     'nombre': 'Tobias Irastorza',
-    'turnos': ['Hoy', 'Mañana', 'Pasado']
+    'turnos': ['Hoy', 'Mañana', 'Pasado'],
+    'cuota': '29/08/2021'
 },
 {        
     'nombre': 'Lautaro Irastorza',
-    'turnos': ['Lunes', 'Miercoles', 'Viernes']
+    'turnos': ['Lunes', 'Miercoles', 'Viernes'],
+    'cuota': '29/08/2021'
 },
 {        
     'nombre': 'Lautaro Martinez',
-    'turnos': ['Lunes', 'Jueves','Viernes']
+    'turnos': ['Lunes', 'Jueves','Viernes'],
+    'cuota': '29/08/2021'
 },
 ]
 routines = ['Dia 1', 'Dia 2', 'Dia 3', 'Dia 4', 'Dia 5'] 
 
 peoples_name = [x['nombre'] for x in people]
+
+# Funciones utiles no relacionadas al LAYOUT
+def distance_between_dates(date1, date2):
+    """ Return distance between dates in days"""
+    return abs(date2 - date1).days
 
 def filter_by_turn(dict, day):
     """ Retorna un diccionario de las personas con las que coincide el turno de un dia """
@@ -30,7 +38,6 @@ def get_day_name(date):
     day_name = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes','Sabado','Domingo']
     return day_name[date.weekday()]
 
-# Funciones utiles no relacionadas al LAYOUT
 def hide_unhide(actual, previous):
     """ Esconde la ventana actual y muestra la ventana anterior pasada como"""
     previous.un_hide()
@@ -225,5 +232,5 @@ def main():
                 
 
 if __name__ == '__main__':
-    main()
-    # print(peoples_name)
+    # main()
+    print(distance_between_dates(datetime.today(), datetime.strptime(people[0]['cuota'],'%d/%m/%Y')))
