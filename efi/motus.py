@@ -1,6 +1,7 @@
 from tkinter.font import BOLD
 import PySimpleGUI as sg
-
+from datetime import datetime
+sg.theme('DarkBrown4')
 
 people = [{
     'nombre': 'Tobias Irastorza',
@@ -19,6 +20,16 @@ routines = ['Dia 1', 'Dia 2', 'Dia 3', 'Dia 4', 'Dia 5']
 
 peoples_name = [x['nombre'] for x in people]
 
+def filter_by_turn(dict, day):
+    """ Retorna un diccionario de las personas con las que coincide el turno de un dia """
+    return [x for x in dict if day in x['turnos']]
+
+
+def get_day_name(date):
+    """ Retorna el nombre del dia """
+    day_name = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes','Sabado','Domingo']
+    return day_name[date.weekday()]
+
 # Funciones utiles no relacionadas al LAYOUT
 def hide_unhide(actual, previous):
     """ Esconde la ventana actual y muestra la ventana anterior pasada como"""
@@ -26,6 +37,7 @@ def hide_unhide(actual, previous):
     actual.hide()
     
 def ver_turno(persona):
+    """ Printea los turnos de las personas """
     text = ''
     for k,v in persona.items():
         if k in 'turnos':
@@ -33,6 +45,13 @@ def ver_turno(persona):
         else:
             text += f'{v} -- '
     return text
+
+def get_alumno_index(name):
+    """ Retorna el index del alumno """
+    for i,x in enumerate(peoples_name):
+        if x == name:
+            return i
+    
 
 # Layout principal
 def principal():
@@ -43,6 +62,7 @@ def principal():
                 [sg.B('RUTINAS', size=(20,1), pad=(0,(0,25)))],
                 [sg.B('ALUMNOS', size=(20,1), pad=(0,(0,25)))],
                 [sg.B('GESTION CUOTAS', size=(20,1), pad=(0,(0,25)))],
+                [sg.B('SALIR', size=(20,1), pad=(0,(0,25)))],
                 ]
     layout = [
                 [sg.Column(columna,element_justification='c',pad=(0,100))],
@@ -53,16 +73,34 @@ def principal():
 def turnos():
     columna = [
                 [sg.Text('TURNERO',font=('Arial',40,BOLD), pad=(0,(0,25)))],
-                [sg.B('Anotar turno', size=(20,1), pad=(0,(0,25)))],
+                [sg.B('Gestionar turnos', size=(20,1), pad=(0,(0,25)))],
                 [sg.B('Turnos del dia', size=(20,1), pad=(0,(0,25)))],
                 [sg.B('Ver turnos', size=(20,1), pad=(0,(0,25)))],
-                [sg.B('Borrar turnos', size=(20,1), pad=(0,(0,25)))],
                 [sg.B('Volver', size=(20,1), pad=(0,(0,25)))],
                 ]
     layout = [
         [sg.Column(columna, element_justification='c', pad=(0,100))]
     ]
     return sg.Window('TURNOS',layout,size=(800,600),finalize=True, element_justification='c' )
+
+def add_turno():
+    columna = [
+        [sg.Checkbox('LUNES', key='lunes', font=(''))],
+        [sg.Checkbox('MARTES', key='martes')],
+        [sg.Checkbox('MIERCOLES',key='miercoles')],
+        [sg.Checkbox('JUEVES',key='jueves')],
+        [sg.Checkbox('VIERNES',key='viernes')],
+        ]
+    
+    columna2 = [
+        [sg.Listbox(peoples_name, size=(20,20), key='alumno', pad=(0,(0,25)))],
+    ]
+    layout = [
+        [sg.Text('AGREGANDO TURNO', font=('Arial',30))],
+        [sg.Column(columna2,element_justification='c'),sg.Column(columna, element_justification='c', pad=((50,0),100))],
+        [sg.B('Actualizar', size=(20,1)),sg.B('Volver',size=(20,1))]
+        ]
+    return sg.Window('Agregar turno', layout, size=(800,600), finalize=True, element_justification='c')
 
 
 # Layout de los alumnos 
@@ -105,40 +143,65 @@ def display_routine(value):
         [sg.Column(columna, element_justification='c', pad=(0,150))]
     ]
     return sg.Window('RUTINAS',layout,size=(800,600),finalize=True, element_justification='c')
-    pass
+    
 
-sg.theme('DarkBrown4')
 
 def main():
     add = False
     modify = False
     # layouts de control
-    principal_layout, turnos_layout, alumnos_layout, rutinas_layout = principal(), None, None, None
+    principal_layout, turnos_layout, alumnos_layout, rutinas_layout, add_turno_layout = principal(), None, None, None, None
     #layouts de display
     rutina_layout_display = None
     #layouts de modificacion
     crud_layout = None
     while True:
         window,event, values = sg.read_all_windows()
-        if event == 'Exit' or event == sg.WIN_CLOSED:
+        if event == 'SALIR' or event == sg.WIN_CLOSED:
             break
         # Turnos
-        print(event, values)
         if event == 'TURNOS' and window == principal_layout:
+            # Ventana principal turnos
             turnos_layout = turnos()
             principal_layout.hide()
         if event == 'Volver' and window == turnos_layout:
+            # Volviendo desde turnos a la ventana principal
             hide_unhide(turnos_layout, principal_layout)
-        if event == 'TURNOS DEL DIA':
-            sg.popup('No hay turnos para hoy')
-        if event == 'Anotar turno' and window == turnos_layout:
-            pass
+        if event == 'Gestionar turnos' and window == turnos_layout:
+            # Anotando turnos
+            add_turno_layout = add_turno()
+            turnos_layout.hide()
+        if event == 'Actualizar' and window == add_turno_layout:
+            # Actualizando turnos del alumno
+            pos = get_alumno_index(values['alumno'][0])
+            print(pos)
+            days = [k.title() for k,v in values.items() if v == True] # dias seleccionados
+            print(days)
+            if len(days) == 0 or values['alumno'] == []:
+                sg.popup('Seleccione al menos un dia / alumno')
+            else:
+                people[pos].update({'turnos':days})
+                sg.popup('Turnos actualizados')
+        if event == 'Turnos del dia':
+            # Chequeando turnos del dia
+            dia = get_day_name(datetime.today())
+            day_turns = filter_by_turn(people, dia) 
+            if len(day_turns) == 0:
+                sg.popup(f'No hay turnos para el dia {dia}')
+            else:
+                texto = f'Personas que asisten el dia de la fecha:\n'
+                for p in day_turns:
+                    texto += f'{p["nombre"]}\n'
+                sg.popup(texto)            
+        if event == 'Volver' and window == add_turno_layout:
+            # Volviendo desde agregar turnos, al layout de turnos
+            hide_unhide(add_turno_layout, turnos_layout)
         if event == 'Ver turnos' and window == turnos_layout:
+            # Ver los turnos de las personas
             texto = ''
             for p in people:
                 texto += ver_turno(p)
             sg.popup(texto)
-            pass
         # Alumnos
         if event == 'ALUMNOS' and window == principal_layout:
             alumnos_layout = alumnos()
