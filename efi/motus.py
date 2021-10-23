@@ -1,3 +1,4 @@
+from tkinter import font
 from tkinter.font import BOLD
 import PySimpleGUI as sg
 from datetime import datetime
@@ -97,20 +98,20 @@ def turnos():
 
 def add_turno():
     columna = [
-        [sg.Checkbox('LUNES', key='lunes', font=(''))],
-        [sg.Checkbox('MARTES', key='martes')],
-        [sg.Checkbox('MIERCOLES',key='miercoles')],
-        [sg.Checkbox('JUEVES',key='jueves')],
-        [sg.Checkbox('VIERNES',key='viernes')],
+        [sg.Checkbox('LUNES', key='lunes', font=('webhostinghub-glyphs',10,'bold'))],
+        [sg.Checkbox('MARTES', key='martes', font=('webhostinghub-glyphs',10,'bold'))],
+        [sg.Checkbox('MIERCOLES',key='miercoles', font=('webhostinghub-glyphs',10,'bold'))],
+        [sg.Checkbox('JUEVES',key='jueves', font=('webhostinghub-glyphs',10,'bold'))],
+        [sg.Checkbox('VIERNES',key='viernes', font=('webhostinghub-glyphs',10,'bold'))]
         ]
     
     columna2 = [
-        [sg.Listbox(peoples_name, size=(20,20), key='alumno', pad=(0,(0,25)))],
+        [sg.Listbox(peoples_name, size=(20,20), key='alumno',font=('verdana',10,'bold'), pad=(0,(0,25)))],
     ]
     layout = [
-        [sg.Text('AGREGANDO TURNO', font=('Arial',30))],
-        [sg.Column(columna2,element_justification='c'),sg.Column(columna, element_justification='c', pad=((50,0),100))],
-        [sg.B('Actualizar', size=(15,2), font=('webhostinghub-glyphs',10,'bold')),sg.B('Volver',size=(15,2))]
+        [sg.Text('AGREGANDO TURNO', font=('webhostinghub-glyphs',30,'bold'))],
+        [sg.Column(columna2,element_justification='c'),sg.Column(columna, element_justification='c',pad=((50,0),100))],
+        [sg.B('Actualizar', size=(15,2), font=('webhostinghub-glyphs',10,'bold')),sg.B('Volver',size=(15,2), font=('webhostinghub-glyphs',10,'bold'))]
         ]
     return sg.Window('Agregar turno', layout, size=(800,600), finalize=True, element_justification='c',button_color=('#c93c36'))
 
@@ -190,21 +191,21 @@ def main():
             days = [k.title() for k,v in values.items() if v == True] # dias seleccionados
             print(days)
             if len(days) == 0 or values['alumno'] == []:
-                sg.popup('Seleccione al menos un dia / alumno', font=(20))
+                sg.popup('Seleccione al menos un dia / alumno', font=('verdana',13, 'bold'), text_color='#c93c36')
             else:
                 people[pos].update({'turnos':days})
-                sg.popup('Turnos actualizados', font=(20))
+                sg.popup('Turnos actualizados', font=('verdana',13, 'bold'), text_color='#c93c36')
         if event == 'Turnos del dia' and window == turnos_layout:
             # Chequeando turnos del dia
             dia = get_day_name(datetime.today())
             day_turns = filter_by_turn(people, dia) 
             if len(day_turns) == 0:
-                sg.popup(f'No hay turnos para el dia {dia}',font=(20))
+                sg.popup(f'No hay turnos para el dia {dia}',font=('verdana',13, 'bold'), text_color='#c93c36')
             else:
                 texto = f'Personas que asisten el dia de la fecha:\n'
                 for p in day_turns:
                     texto += f'{p["nombre"]}\n'
-                sg.popup(texto,font=(20))
+                sg.popup(texto,font=('verdana',13, 'bold'), text_color='#c93c36')
         if event == 'Volver' and window == add_turno_layout:
             # Volviendo desde agregar turnos, al layout de turnos
             hide_unhide(add_turno_layout, turnos_layout)
@@ -213,7 +214,7 @@ def main():
             texto = ''
             for p in people:
                 texto += ver_turno(p)
-            sg.popup(texto, font=(20))
+            sg.popup(texto, font=('verdana',13, 'bold'), text_color='#c93c36')
         # Alumnos
         if event == 'ALUMNOS' and window == principal_layout:
             alumnos_layout = alumnos()
