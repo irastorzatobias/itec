@@ -1,5 +1,4 @@
-from tkinter import font
-from tkinter.font import BOLD
+
 import PySimpleGUI as sg
 from datetime import datetime
 sg.theme('DarkBrown4')
@@ -66,6 +65,21 @@ def get_alumno_index(name):
     for i,x in enumerate(peoples_name):
         if x == name:
             return i
+
+def add_alumno():
+    columna = [
+                [sg.Text('AGREGAR ALUMNO',font=('Arial',40))],
+                [sg.Text('Nombre', size=(10,1), font=('Arial',20)), sg.InputText('')],
+                [sg.Text('Turnos', size=(10,1), font=('Arial',20)), sg.Multiline(size=(15,3), font=('Arial',20))],
+                [sg.Text('Pago', size=(10,1), font=('Arial',20)), sg.InputText('')],
+                [sg.Text('Cuota', size=(10,1), font=('Arial',20)), sg.Checkbox('', size=(10,1))],
+                [sg.B('Agregar', size=(10,1), font=('webhostinghub-glyphs',10,'bold'), pad=(0,(0,25))), sg.B('Volver', size=(10,1), font=('webhostinghub-glyphs',10,'bold'), pad=(0,(0,25)))],
+                ]
+    layout = [
+        [sg.Column(columna, element_justification='c', pad=(0,150))] 
+        ]
+    return sg.Window('Agregar Alumno', layout, size=(800,600), finalize=True,element_justification='c',button_color=('#c93c36'))
+
 
 def update_turns(valores):
     """ Recibe los valores de la ventana correspondiente a los turnos y los actualiza"""
@@ -227,10 +241,10 @@ def main():
             # Chequeando turnos del dia
             check_day_turns()
         if event == 'Volver' and window == add_turno_layout:
-        # Volviendo desde agregar turnos, al layout de turnos
+            # Volviendo desde agregar turnos, al layout de turnos
             hide_unhide(add_turno_layout, turnos_layout)
         if event == 'Ver turnos' and window == turnos_layout:
-        # Ver los turnos de las personas
+            # Ver los turnos de las personas
             see_turns_layout = see_turns()
             hide_unhide(turnos_layout, see_turns_layout)
         if event == 'Volver' and window == see_turns_layout:
@@ -239,6 +253,9 @@ def main():
         if event == 'ALUMNOS' and window == principal_layout:
             alumnos_layout = alumnos()
             principal_layout.hide()
+        if event == 'Agregar' and window == alumnos_layout:
+            # Agregando un alumno
+            add_alumno()
         if event == 'Volver' and window == alumnos_layout:
             hide_unhide(alumnos_layout, principal_layout)
         # Rutinas
