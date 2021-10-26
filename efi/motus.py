@@ -3,32 +3,28 @@ from tkinter.constants import W
 import PySimpleGUI as sg
 from datetime import datetime
 sg.theme('DarkBrown4')
-    
-        
+
 people = [{
     'nombre': 'Tobias Irastorza',
     'turnos': ['Lunes', 'Miercoles', 'Viernes'],
     'pago': '29/08/2021',
-    'cuota':False
-},
-{        
+    },
+    {        
     'nombre': 'Lautaro Irastorza',
     'turnos': ['Lunes', 'Miercoles', 'Viernes'],
-    'pago': '29/08/2021',
-    'cuota':False
-    
-},
-{        
+    'pago': '29/08/2021',    
+    },
+    {        
     'nombre': 'Lautaro Martinez',
     'turnos': ['Lunes', 'Jueves','Viernes'],
     'pago': '29/08/2021', 
-    'cuota':False  
-},
-]
+    },
+    ]
 routines = ['Dia 1', 'Dia 2', 'Dia 3', 'Dia 4', 'Dia 5'] 
 test = [['Tobias','Irastorza'],['Lautaro','Irastorza'],['Lautaro','Martinez']]
 
 peoples_name = [x['nombre'] for x in people]
+    
 
 # Funciones utiles no relacionadas al LAYOUT
 def get_alumno(valores):
@@ -45,7 +41,7 @@ def set_alumno(valores, pList):
             pList.append({
                 'nombre': valores['nombre_alumno'],
                 'turnos': turnos,
-                'pago': datetime.today().strftime("%d/%m/%Y"),
+                'pago': valores['date'].strftime("%d/%m/%Y"),
                 'cuota': True
             })
             peoples_name.append(valores['nombre_alumno'])
@@ -55,6 +51,7 @@ def set_alumno(valores, pList):
 
 def modify_alumno(valores, alumno):
     """ Modifica los datos de un alumno """
+    add_modify_alumno['nombre']
     alumno['nombre'] = valores['nombre_alumno']
     alumno['turnos'] = [k.title() for k,v in valores.items() if v == True]
     alumno['cuota'] = True
@@ -72,7 +69,7 @@ def delete_alumno(valores, window):
 def set_alumno(valores, pList):
     """ Recibe los valores de la window actual y los appendea a la lista de personas"""
     turnos = [k.title() for k,v in valores.items() if v == True]
-    if len(valores['nombre_alumno']) < 1 or len(turnos) < 1:
+    if len(valores['nombre_alumno']) < 1 or len(turnos) < 1 or len(valores['date']) < 1:
         sg.popup('Ingrese todos los datos para continuar')
     else:
         if valores['nombre_alumno'] not in peoples_name:    
@@ -200,7 +197,7 @@ def see_turns():
 def turns_by_day():
     """ Layout para filtrar turnos por dia"""
     columna1 = [
-        [sg.Listbox(size=(25,20), key='alumnos',values=[''], no_scrollbar=True)],
+        [sg.Listbox(size=(25,20), key='alumnos',values=[''], no_scrollbar=True,font=('verdana',13,'bold'), pad=(0,(0,25)))],
     ]
     columna2 = [
         [sg.Radio('LUNES', key='Lunes', font=('bahnschrift',13,'bold'),group_id='dia', default=True)],
@@ -247,6 +244,7 @@ def add_modify_alumno(action):
     layout = [
         [sg.Column(columna, element_justification='c',pad=(0,(0,25)))],
         [sg.Column(columna2, element_justification='l',pad=(0,(0,25)))],
+        [sg.Button('Fecha de pago',font=('bahnschrift',13,'bold'),size=(20,1),pad=(5,(0,25))), sg.I(key='date',pad=(0,(0,25)),size=(15,1),font=('verdana',13,'bold'),text_color='white')],
         [sg.B(f'{action.upper()}',size=(9,1), font=('bahnschrift',13,'bold')), sg.B('Volver atras',size=(15,1), font=('bahnschrift',13,'bold'))]
     ]
     return sg.Window('AGG ALUMNO',layout, size=(1024,700), finalize=True, element_justification='c',button_color=('#c93c36'))
@@ -287,8 +285,7 @@ def display_routine(value):
 
 
 def main():
-    add = False
-    modify = False
+
     # layouts de control
     principal_layout, turnos_layout, alumnos_layout, rutinas_layout = principal(), None, None, None 
     add_turno_layout, see_turns_layout, filter_turns, add_alumno_layout = None, None, None, None
@@ -343,14 +340,16 @@ def main():
             # Agregando un alumno
             add_alumno_layout = add_modify_alumno('agregar')
             alumnos_layout.hide() 
-        if event == 'Agregar' and window == add_alumno_layout:
+        if event == 'Fecha de pago' and window == add_alumno_layout:
+            fecha = sg.popup_get_date()
+            add_alumno_layout['date'].update(fecha)
+        if event == 'AGREGAR' and window == add_alumno_layout:
             # En el layout, ya agregando el alumno
             set_alumno(values, people)
         if event == 'Modificar' and window == alumnos_layout:
             # Modificando un alumno}
             student = get_alumno(values)
             add_alumno_layout = add_modify_alumno('modificar')
-            
             alumnos_layout.hide()
         if event == 'Borrar' and window == alumnos_layout:
             # Borrnado un alumno
