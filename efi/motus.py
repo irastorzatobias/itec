@@ -36,7 +36,7 @@ def distance_between_dates(date1, date2):
 
 def filter_by_turn(dict, day):
     """ Retorna un diccionario de las personas con las que coincide el turno de un dia """
-    return [x for x in dict if day in x['turnos']]
+    return [x['nombre'] for x in dict if day in x['turnos']]
 
 
 def get_day_name(date):
@@ -65,21 +65,7 @@ def get_alumno_index(name):
     for i,x in enumerate(peoples_name):
         if x == name:
             return i
-
-def add_alumno():
-    columna = [
-                [sg.Text('AGREGAR ALUMNO',font=('Arial',40))],
-                [sg.Text('Nombre', size=(10,1), font=('Arial',20)), sg.InputText('')],
-                [sg.Text('Turnos', size=(10,1), font=('Arial',20)), sg.Multiline(size=(15,3), font=('Arial',20))],
-                [sg.Text('Pago', size=(10,1), font=('Arial',20)), sg.InputText('')],
-                [sg.Text('Cuota', size=(10,1), font=('Arial',20)), sg.Checkbox('', size=(10,1))],
-                [sg.B('Agregar', size=(10,1), font=('webhostinghub-glyphs',10,'bold'), pad=(0,(0,25))), sg.B('Volver', size=(10,1), font=('webhostinghub-glyphs',10,'bold'), pad=(0,(0,25)))],
-                ]
-    layout = [
-        [sg.Column(columna, element_justification='c', pad=(0,150))] 
-        ]
-    return sg.Window('Agregar Alumno', layout, size=(800,600), finalize=True,element_justification='c',button_color=('#c93c36'))
-
+    
 
 def update_turns(valores):
     """ Recibe los valores de la ventana correspondiente a los turnos y los actualiza"""
@@ -92,92 +78,99 @@ def update_turns(valores):
         sg.popup('Turnos actualizados', font=('verdana',13, 'bold'), text_color='#c93c36')
 
 
-def check_day_turns():
-    dia = get_day_name(datetime.today())
-    day_turns = filter_by_turn(people, dia) 
-    if len(day_turns) == 0:
-        sg.popup(f'No hay turnos para el dia {dia}',font=('verdana',13, 'bold'), text_color='#c93c36')
-    else:
-        texto = f'Personas que asisten el dia de la fecha:\n'
-        for p in day_turns:
-            texto += f'{p["nombre"]}\n'
-            sg.popup(texto,font=('verdana',13, 'bold'), text_color='#c93c36')
-    
-
 # Layout principal
 def principal():
     """ Layout principal """
     columna = [
-                [sg.Text('MOTUS',font=('webhostinghub-glyphs',40,'bold'),pad=(0,(0,25)))],
-                [sg.B('TURNOS', size=(15,2), font=('webhostinghub-glyphs',10,'bold'), pad=(0,(0,25)))],
-                [sg.B('ALUMNOS', size=(15,2), font=('webhostinghub-glyphs',10,'bold'), pad=(0,(0,25)))],
-                [sg.B('RUTINAS', size=(15,2), font=('webhostinghub-glyphs',10,'bold'), pad=(0,(0,25)))],
-                [sg.B('GESTION CUOTAS', size=(15,2), font=('webhostinghub-glyphs',10,'bold'), pad=(0,(0,25)))],
-                [sg.B('SALIR', size=(15,2), font=('webhostinghub-glyphs',10,'bold'),pad=(0,(0,25)))],
+                [sg.Text('MOTUS',font=('bahnschrift',65,'bold'),pad=(0,(0,50)))],
+                [sg.B('TURNOS', size=(20,2), pad=(0,(0,25)),font=('bahnschrift',13,'bold'))],
+                [sg.B('ALUMNOS', size=(20,2), pad=(0,(0,25)),font=('bahnschrift',13,'bold'))],
+                [sg.B('RUTINAS', size=(20,2), pad=(0,(0,25)),font=('bahnschrift',13,'bold'))],
+                [sg.B('GESTION CUOTAS', size=(20,2), pad=(0,(0,25)),font=('bahnschrift',13,'bold'))],
+                [sg.B('SALIR', size=(20,2), pad=(0,(0,25)),font=('bahnschrift',13,'bold'))],
                 ]
     layout = [
                 [sg.Column(columna,element_justification='c',pad=(0,100))],
                 ]
-    return sg.Window('MOTUS TRAINING', layout,size=(800,600),finalize=True, element_justification='c',button_color=('#c93c36'),return_keyboard_events=True)
+    return sg.Window('MOTUS TRAINING', layout,size=(1024,768),finalize=True, element_justification='c',button_color=('#c93c36'),return_keyboard_events=True)
 
 # Layout de los turnos
 def turnos():
     columna = [
-                [sg.Text('TURNERO',font=('Courier New',40,'bold'), pad=(0,(0,25)))],
-                [sg.B('Gestionar turnos', size=(15,2), font=('webhostinghub-glyphs',10,'bold'), pad=(0,(0,25)))],
-                [sg.B('Turnos del dia', size=(15,2), font=('webhostinghub-glyphs',10,'bold'), pad=(0,(0,25)))],
-                [sg.B('Ver turnos', size=(15,2), font=('webhostinghub-glyphs',10,'bold'), pad=(0,(0,25)))],
-                [sg.B('Volver', size=(15,2), font=('webhostinghub-glyphs',10,'bold'), pad=(0,(0,25)))],
+                [sg.Text('TURNERO',font=('bahnschrift',65,'bold'), pad=(0,(0,50)))],
+                [sg.B('Gestionar turnos', size=(20,2), font=('bahnschrift',13,'bold'), pad=(0,(0,25)))],
+                [sg.B('Turnos por dia', size=(20,2), font=('bahnschrift',13,'bold'), pad=(0,(0,25)))],
+                [sg.B('Ver turnos', size=(20,2), font=('bahnschrift',13,'bold'), pad=(0,(0,25)))],
+                [sg.B('Volver', size=(20,2), font=('bahnschrift',13,'bold'), pad=(0,(0,25)))],
                 ]
     layout = [
         [sg.Column(columna, element_justification='c', pad=(0,100))]
     ]
-    return sg.Window('TURNOS',layout,size=(800,600),finalize=True, element_justification='c',button_color=('#c93c36'))
+    return sg.Window('TURNOS',layout,size=(1024,768),finalize=True, element_justification='c',button_color=('#c93c36'))
 
 def add_turno():
     """ Modifica turnos mediante uso de Listbox"""
     columna = [
-        [sg.Checkbox('LUNES', key='lunes', font=('webhostinghub-glyphs',10,'bold'))],
-        [sg.Checkbox('MARTES', key='martes', font=('webhostinghub-glyphs',10,'bold'))],
-        [sg.Checkbox('MIERCOLES',key='miercoles', font=('webhostinghub-glyphs',10,'bold'))],
-        [sg.Checkbox('JUEVES',key='jueves', font=('webhostinghub-glyphs',10,'bold'))],
-        [sg.Checkbox('VIERNES',key='viernes', font=('webhostinghub-glyphs',10,'bold'))]
+        [sg.Checkbox('LUNES', key='lunes', font=('bahnschrift',13,'bold'))],
+        [sg.Checkbox('MARTES', key='martes', font=('bahnschrift',13,'bold'))],
+        [sg.Checkbox('MIERCOLES',key='miercoles', font=('bahnschrift',13,'bold'))],
+        [sg.Checkbox('JUEVES',key='jueves', font=('bahnschrift',13,'bold'))],
+        [sg.Checkbox('VIERNES',key='viernes', font=('bahnschrift',13,'bold'))]
         ]
     
     columna2 = [
-        [sg.Listbox(peoples_name, size=(20,20), key='alumno',font=('verdana',10,'bold'), pad=(0,(0,25)))],
+        [sg.Listbox(peoples_name, size=(20,20), key='alumno',font=('verdana',13,'bold'), pad=(0,(0,25)))],
     ]
     layout = [
-        [sg.Text('GESTION TURNOS', font=('webhostinghub-glyphs',25,'bold'))],
+        [sg.Text('GESTION TURNOS', font=('bahnschrift',40,'bold'), pad=(0,(50,50)))],
         [sg.Column(columna2,element_justification='c'),sg.Column(columna, element_justification='c',pad=((50,0),100))],
-        [sg.B('Actualizar', size=(15,2), font=('webhostinghub-glyphs',10,'bold')),sg.B('Volver',size=(15,2), font=('webhostinghub-glyphs',10,'bold'))]
+        [sg.B('Actualizar', size=(20,2), font=('bahnschrift',13,'bold')),sg.B('Volver',size=(20,2), font=('bahnschrift',13,'bold'))]
         ]
-    return sg.Window('Agregar turno', layout, size=(800,600), finalize=True, element_justification='c',button_color=('#c93c36'))
+    return sg.Window('Agregar turno', layout, size=(1024,768), finalize=True, element_justification='c',button_color=('#c93c36'))
 
 def see_turns():
     """ Genera un nuevo layout con los turnos de los alumnos"""
     people_tuple = [(x['nombre'],x['turnos']) for x in people]
     layout = [
-        [sg.T('TURNOS', font=('webhostinghub-glyphs',25,'bold'),p=(0,(25,0)))],
+        [sg.T('TURNOS', font=('bahnschrift',65,'bold'),p=(0,(25,0)))],
         [sg.Table(people_tuple, headings=['Nombre', 'Turnos'],font=('verdana',13,'bold'), key='tabla',col_widths=[30,30],row_height=40,justification='l',auto_size_columns=False, pad=(0,(30,25)),text_color='white', 
                   background_color='#c93c36',hide_vertical_scroll=True)],
-        [sg.B('Volver',font=('webhostinghub-glyphs',10,'bold'),size=(15,2), pad=(0,(0,25)))],
+        [sg.B('Volver',font=('bahnschrift',13,'bold'),size=(20,2), pad=(0,(0,25)))],
     ]
-    return sg.Window('Turnos', layout, size=(800,600), finalize=True,element_justification='c',button_color=('#c93c36'))
-    
+    return sg.Window('Turnos', layout, size=(1024,768), finalize=True,element_justification='c',button_color=('#c93c36'))
+
+def turns_by_day():
+    """ Layout para filtrar turnos por dia"""
+    columna1 = [
+        [sg.Listbox(size=(25,20), key='alumnos',font=('verdana',13,'bold'), pad=(0,(0,25)),values=[''], no_scrollbar=True)],
+    ]
+    columna2 = [
+        [sg.Radio('LUNES', key='Lunes', font=('bahnschrift',13,'bold'),group_id='dia', default=True)],
+        [sg.Radio('MARTES', key='Martes', font=('bahnschrift',13,'bold'),group_id='dia')],
+        [sg.Radio('MIERCOLES',key='Miercoles', font=('bahnschrift',13,'bold'),group_id='dia')],
+        [sg.Radio('JUEVES',key='Jueves', font=('bahnschrift',13,'bold'),group_id='dia')],
+        [sg.Radio('VIERNES',key='Viernes', font=('bahnschrift',13,'bold'),group_id='dia')]
+        ]
+    layout = [
+        [sg.T('Filtrado de turnos', key='turnos_por_dia',font=('bahnschrift',40,'bold'), pad=(0,(50,50)))],
+        [sg.Column(columna1, element_justification='c'),sg.Column(columna2, element_justification='c',pad=((50,0),100))],
+        [sg.B('Aplicar',size=(20,2),font=('bahnschrift',13,'bold')), sg.B('Volver',size=(20,2), font=('bahnschrift',13,'bold'))]
+    ]
+    return sg.Window('Filtrado por dias de turnos',layout,size=(1024,768),finalize=True,element_justification='c',button_color=('#c93c36'))
+
 
 # Layout de los alumnos 
 def alumnos():
     columna = [
-                [sg.Text('ALUMNOS',font=('webhostinghub-glyphs',35,'bold'), pad=(0,(0,25)))],
-                [sg.Listbox(peoples_name, size=(20,20), key='alumno',font=('verdana',10,'bold'), pad=(0,(0,25)))],
-                [sg.B('Agregar', font=('webhostinghub-glyphs',10,'bold')), sg.B('Modificar',font=('webhostinghub-glyphs',10,'bold')), sg.B('Borrar',font=('webhostinghub-glyphs',10,'bold')),],
-                [sg.B('Ver', size=(7,1), font=('webhostinghub-glyphs',10,'bold'),),sg.B('Volver', size=(7,1), font=('webhostinghub-glyphs',10,'bold'),)]
+                [sg.Text('ALUMNOS',font=('bahnschrift',35,'bold'), pad=(0,(0,25)))],
+                [sg.Listbox(peoples_name, size=(20,20), key='alumno',font=('verdana',13,'bold'), pad=(0,(0,25)))],
+                [sg.B('Agregar', font=('bahnschrift',13,'bold')), sg.B('Modificar',font=('bahnschrift',13,'bold')), sg.B('Borrar',font=('bahnschrift',13,'bold')),],
+                [sg.B('Ver', size=(7,1), font=('bahnschrift',13,'bold'),),sg.B('Volver', size=(7,1), font=('bahnschrift',13,'bold'),)]
                 ]
     layout = [
         [sg.Column(columna, element_justification='c')]
     ]
-    return sg.Window('TURNOS',layout,size=(800,600),finalize=True, element_justification='c',button_color=('#c93c36'))
+    return sg.Window('TURNOS',layout,size=(1024,768),finalize=True, element_justification='c',button_color=('#c93c36'))
     
 
 # En un principio es para modificar a los alumnos
@@ -187,25 +180,25 @@ def crud():
 # Layout de rutinas, display y CRUD tambien en lo posible
 def rutinas():
     columna = [
-                [sg.Text('RUTINAS',font=('webhostinghub-glyphs',35,'bold'),p=(0,(0,25)))],
-                [sg.Listbox(routines, size=(20,len(routines)),font=('verdana',10,'bold'), key='rutina', pad=(0,(0,25)))],
-                [sg.B('Agregar', font=('webhostinghub-glyphs',10,'bold')), sg.B('Modificar',font=('webhostinghub-glyphs',10,'bold')), sg.B('Borrar',font=('webhostinghub-glyphs',10,'bold'))],
-                [sg.B('Ver', size=(7,1), font=('webhostinghub-glyphs',10,'bold')),sg.B('Volver',font=('webhostinghub-glyphs',10,'bold'), size=(7,1))]
+                [sg.Text('RUTINAS',font=('bahnschrift',35,'bold'),p=(0,(0,25)))],
+                [sg.Listbox(routines, size=(20,len(routines)),font=('verdana',13,'bold'), key='rutina', pad=(0,(0,25)))],
+                [sg.B('Agregar', font=('bahnschrift',13,'bold')), sg.B('Modificar',font=('bahnschrift',13,'bold')), sg.B('Borrar',font=('bahnschrift',13,'bold'))],
+                [sg.B('Ver', size=(7,1), font=('bahnschrift',13,'bold')),sg.B('Volver',font=('bahnschrift',13,'bold'), size=(7,1))]
                 ]
     layout = [
         [sg.Column(columna, element_justification='c', pad=(0,150))]
     ]
-    return sg.Window('RUTINAS',layout,size=(800,600),finalize=True, element_justification='c',button_color=('#c93c36'))
+    return sg.Window('RUTINAS',layout,size=(1024,768),finalize=True, element_justification='c',button_color=('#c93c36'))
     
 def display_routine(value):
     columna = [
                 [sg.Text(f'RUTINA {value["rutina"][0]}',font=('Arial',40))],
-                [sg.B('Volver', font=('webhostinghub-glyphs',10,'bold'),size=(7,1))]
+                [sg.B('Volver', font=('bahnschrift',13,'bold'),size=(7,1))]
                 ]
     layout = [
         [sg.Column(columna, element_justification='c', pad=(0,150))]
     ]
-    return sg.Window('RUTINAS',layout,size=(800,600),finalize=True, element_justification='c',button_color=('#c93c36'))
+    return sg.Window('RUTINAS',layout,size=(1024,768),finalize=True, element_justification='c',button_color=('#c93c36'))
     
 
 
@@ -213,7 +206,7 @@ def main():
     add = False
     modify = False
     # layouts de control
-    principal_layout, turnos_layout, alumnos_layout, rutinas_layout, add_turno_layout, see_turns_layout = principal(), None, None, None, None, None
+    principal_layout, turnos_layout, alumnos_layout, rutinas_layout, add_turno_layout, see_turns_layout, filter_turns = principal(), None, None, None, None, None, None
     #layouts de display
     rutina_layout_display = None
     #layouts de modificacion
@@ -237,9 +230,17 @@ def main():
         if event == 'Actualizar' and window == add_turno_layout:
             # Actualizando turnos del alumno
             update_turns(values)
-        if event == 'Turnos del dia' and window == turnos_layout:
-            # Chequeando turnos del dia
-            check_day_turns()
+        if event == 'Turnos por dia' and window == turnos_layout:
+            # Filtrando turnos por dia
+            filter_turns = turns_by_day()
+            turnos_layout.hide()
+        if event == 'Aplicar' and window == filter_turns:
+            day = [k for k,v in values.items() if v == True]
+            window['turnos_por_dia'].update(f'Turnos del dia {day[0].lower()}')
+            window['alumnos'].update(filter_by_turn(people,day[0]))
+            
+        if event == 'Volver' and window == filter_turns:
+            hide_unhide(filter_turns, turnos_layout)
         if event == 'Volver' and window == add_turno_layout:
             # Volviendo desde agregar turnos, al layout de turnos
             hide_unhide(add_turno_layout, turnos_layout)
@@ -255,7 +256,8 @@ def main():
             principal_layout.hide()
         if event == 'Agregar' and window == alumnos_layout:
             # Agregando un alumno
-            add_alumno()
+            # add_alumno()
+            pass
         if event == 'Volver' and window == alumnos_layout:
             hide_unhide(alumnos_layout, principal_layout)
         # Rutinas
@@ -276,4 +278,5 @@ def main():
 
 if __name__ == '__main__':
     main()
-    # print(distance_between_dates(datetime.today(), datetime.strptime(people[0]['cuota'],'%d/%m/%Y')))
+    # print(distance_between_dates(datetime.today(), datetime.strptime(people[0]['cuota'],'%d/%m/%Y')))     
+    
