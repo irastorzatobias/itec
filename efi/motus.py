@@ -40,7 +40,7 @@ def get_alumno(valores):
     """ Devuelve el alumno completo segun el nombre pasado"""
     return people[get_alumno_index(valores['alumno'][0])]
 
-def set_alumno(valores, pList):
+def set_alumno(valores, pList,date):
     """ Recibe los valores de la window actual y los appendea a la lista de personas"""
     turnos = [k.title() for k,v in valores.items() if v == True]
     if len(valores['nombre_alumno']) < 1 or len(turnos) < 1:
@@ -50,20 +50,19 @@ def set_alumno(valores, pList):
             pList.append({
                 'nombre': valores['nombre_alumno'],
                 'turnos': turnos,
-                'pago': date_from_tuple(valores['date']),
-                'cuota': True
+                'pago': date,
             })
             peoples_name.append(valores['nombre_alumno'])
             sg.popup('Alumno agregado con exito')
         else:
             sg.popup('El alumno ya existe')
 
-def modify_alumno(valores, alumno):
+def modify_alumno(valores, alumno, date):
     """ Modifica los datos de un alumno, recibiendo como argumentos un alumno, y los values de la ventana """
     alumno['nombre'] = valores['nombre_alumno']
     alumno['turnos'] = [k.title() for k,v in valores.items() if v == True]
-    alumno['pago'] = date_from_tuple(valores['date'])
-    peoples_name[get_alumno_index(alumno['nombre'])] = alumno['nombre']
+    alumno['pago'] = date
+    
         
 
     
@@ -332,11 +331,11 @@ def main():
             alumnos_layout.hide() 
         if event == 'Fecha de pago' and window == add_alumno_layout:
             fecha = sg.popup_get_date()
-            print(date_from_tuple(fecha))
+            fecha = date_from_tuple(fecha)
             add_alumno_layout['date'].update(fecha)
         if event == 'AGREGAR' and window == add_alumno_layout:
             # En el layout, ya agregando el alumno
-            set_alumno(values, people)
+            set_alumno(values, people, fecha)
         if event == 'Modificar' and window == alumnos_layout:
         # Modificando un alumno}
             try:
@@ -346,7 +345,7 @@ def main():
             add_alumno_layout = add_modify_alumno('modificar')
             alumnos_layout.hide()
         if event == 'MODIFICAR' and window == add_alumno_layout:
-            modify_alumno(values, student)
+            modify_alumno(values, student, fecha)
         if event == 'Borrar' and window == alumnos_layout:
             # Borrnado un alumno
             delete_alumno(values, alumnos_layout)
