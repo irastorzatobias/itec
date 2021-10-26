@@ -30,6 +30,11 @@ test = [['Tobias','Irastorza'],['Lautaro','Irastorza'],['Lautaro','Martinez']]
 peoples_name = [x['nombre'] for x in people]
 
 # Funciones utiles no relacionadas al LAYOUT
+def get_alumno(valores):
+    """ Devuelve el alumno completo segun el nombre pasado"""
+    return people[get_alumno_index(valores['alumno'][0])]
+    
+
 def distance_between_dates(date1, date2):
     """ Retorna distancia entre dos fechas en dias"""
     return abs(date2 - date1).days
@@ -142,7 +147,7 @@ def see_turns():
 def turns_by_day():
     """ Layout para filtrar turnos por dia"""
     columna1 = [
-        [sg.Listbox(size=(25,20), key='alumnos',font=('verdana',13,'bold'), pad=(0,(0,25)),values=[''], no_scrollbar=True)],
+        [sg.Listbox(size=(25,20), key='alumnos',values=[''], no_scrollbar=True)],
     ]
     columna2 = [
         [sg.Radio('LUNES', key='Lunes', font=('bahnschrift',13,'bold'),group_id='dia', default=True)],
@@ -152,7 +157,7 @@ def turns_by_day():
         [sg.Radio('VIERNES',key='Viernes', font=('bahnschrift',13,'bold'),group_id='dia')]
         ]
     layout = [
-        [sg.T('Filtrado de turnos', key='turnos_por_dia',font=('bahnschrift',40,'bold'), pad=(0,(50,50)))],
+        [sg.T('TURNOS POR DIA', key='turnos_por_dia',font=('bahnschrift',40,'bold'), pad=(0,(50,50)))],
         [sg.Column(columna1, element_justification='c'),sg.Column(columna2, element_justification='c',pad=((50,0),100))],
         [sg.B('Aplicar',size=(20,2),font=('bahnschrift',13,'bold')), sg.B('Volver',size=(20,2), font=('bahnschrift',13,'bold'))]
     ]
@@ -162,7 +167,7 @@ def turns_by_day():
 # Layout de los alumnos 
 def alumnos():
     columna = [
-                [sg.Text('ALUMNOS',font=('bahnschrift',35,'bold'), pad=(0,(0,25)))],
+                [sg.Text('ALUMNOS',font=('bahnschrift',40,'bold'), pad=(0,(25,30)))],
                 [sg.Listbox(peoples_name, size=(20,20), key='alumno',font=('verdana',13,'bold'), pad=(0,(0,25)))],
                 [sg.B('Agregar', font=('bahnschrift',13,'bold')), sg.B('Modificar',font=('bahnschrift',13,'bold')), sg.B('Borrar',font=('bahnschrift',13,'bold')),],
                 [sg.B('Ver', size=(7,1), font=('bahnschrift',13,'bold'),),sg.B('Volver', size=(7,1), font=('bahnschrift',13,'bold'),)]
@@ -171,7 +176,12 @@ def alumnos():
         [sg.Column(columna, element_justification='c')]
     ]
     return sg.Window('TURNOS',layout,size=(1024,768),finalize=True, element_justification='c',button_color=('#c93c36'))
-    
+
+def display_alumno(values):
+    """ Genera un layout con los datos del alumno"""
+    alumnito = get_alumno(values)
+    text = f'Alumno {alumnito["nombre"]}\nTurnos: {alumnito["turnos"]}\nUltima cuota paga: {alumnito["pago"]}'
+    sg.popup(text,title='Alumno',font=('verdana',13,'bold'),button_color=('#c93c36'))
 
 # En un principio es para modificar a los alumnos
 def crud():
@@ -207,13 +217,13 @@ def main():
     modify = False
     # layouts de control
     principal_layout, turnos_layout, alumnos_layout, rutinas_layout, add_turno_layout, see_turns_layout, filter_turns = principal(), None, None, None, None, None, None
-    #layouts de display
-    rutina_layout_display = None
+    #layouts de displayw
+    rutina_layout_display= None
     #layouts de modificacion
     crud_layout = None
     while True:
         window,event, values = sg.read_all_windows()
-        if event == 'SALIR' or event == sg.WIN_CLOSED or event == 'Escape:27':
+        if event == 'SALIR' or event == sg.WIN_CLOSED or event == 'Escape:27' and window == principal_layout:
             break
         # Turnos
         if event == 'TURNOS' and window == principal_layout:
@@ -258,7 +268,11 @@ def main():
             # Agregando un alumno
             # add_alumno()
             pass
+        if event == 'Ver' and window == alumnos_layout:
+            # Popup de alumno seleccionado
+            display_alumno(values)
         if event == 'Volver' and window == alumnos_layout:
+            # Volviendo de layout de alumnos al layout principal
             hide_unhide(alumnos_layout, principal_layout)
         # Rutinas
         if event == 'RUTINAS':
