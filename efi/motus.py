@@ -1,4 +1,5 @@
 
+from tkinter.constants import W
 import PySimpleGUI as sg
 from datetime import datetime
 sg.theme('DarkBrown4')
@@ -33,7 +34,59 @@ peoples_name = [x['nombre'] for x in people]
 def get_alumno(valores):
     """ Devuelve el alumno completo segun el nombre pasado"""
     return people[get_alumno_index(valores['alumno'][0])]
+
+def set_alumno(valores, pList):
+    """ Recibe los valores de la window actual y los appendea a la lista de personas"""
+    turnos = [k.title() for k,v in valores.items() if v == True]
+    if len(valores['nombre_alumno']) < 1 or len(turnos) < 1:
+        sg.popup('Ingrese todos los datos para continuar')
+    else:
+        if valores['nombre_alumno'] not in peoples_name:    
+            pList.append({
+                'nombre': valores['nombre_alumno'],
+                'turnos': turnos,
+                'pago': datetime.today().strftime("%d/%m/%Y"),
+                'cuota': True
+            })
+            peoples_name.append(valores['nombre_alumno'])
+            sg.popup('Alumno agregado con exito')
+        else:
+            sg.popup('El alumno ya existe')
+
+def modify_alumno(valores, alumno):
+    """ Modifica los datos de un alumno """
+    alumno['nombre'] = valores['nombre_alumno']
+    alumno['turnos'] = [k.title() for k,v in valores.items() if v == True]
+    alumno['cuota'] = True
+    alumno['']
     
+
+    
+def delete_alumno(valores, window):
+    """ Elimina un alumno """
+    alumnito = get_alumno(valores)
+    peoples_name.remove(alumnito['nombre'])
+    people.remove(alumnito)
+    window['alumno'].update(peoples_name)
+
+def set_alumno(valores, pList):
+    """ Recibe los valores de la window actual y los appendea a la lista de personas"""
+    turnos = [k.title() for k,v in valores.items() if v == True]
+    if len(valores['nombre_alumno']) < 1 or len(turnos) < 1:
+        sg.popup('Ingrese todos los datos para continuar')
+    else:
+        if valores['nombre_alumno'] not in peoples_name:    
+            pList.append({
+                'nombre': valores['nombre_alumno'],
+                'turnos': turnos,
+                'pago': datetime.today().strftime("%d/%m/%Y"),
+                'cuota': True
+            })
+            peoples_name.append(valores['nombre_alumno'])
+            sg.popup('Alumno agregado con exito')
+        else:
+            sg.popup('El alumno ya existe')
+
 
 def distance_between_dates(date1, date2):
     """ Retorna distancia entre dos fechas en dias"""
@@ -97,7 +150,7 @@ def principal():
     layout = [
                 [sg.Column(columna,element_justification='c',pad=(0,100))],
                 ]
-    return sg.Window('MOTUS TRAINING', layout,size=(1024,768),finalize=True, element_justification='c',button_color=('#c93c36'),return_keyboard_events=True)
+    return sg.Window('MOTUS TRAINING', layout,size=(1024,700),finalize=True, element_justification='c',button_color=('#c93c36'),return_keyboard_events=True)
 
 # Layout de los turnos
 def turnos():
@@ -111,7 +164,7 @@ def turnos():
     layout = [
         [sg.Column(columna, element_justification='c', pad=(0,100))]
     ]
-    return sg.Window('TURNOS',layout,size=(1024,768),finalize=True, element_justification='c',button_color=('#c93c36'))
+    return sg.Window('TURNOS',layout,size=(1024,700),finalize=True, element_justification='c',button_color=('#c93c36'))
 
 def add_turno():
     """ Modifica turnos mediante uso de Listbox"""
@@ -131,18 +184,18 @@ def add_turno():
         [sg.Column(columna2,element_justification='c'),sg.Column(columna, element_justification='c',pad=((50,0),100))],
         [sg.B('Actualizar', size=(20,2), font=('bahnschrift',13,'bold')),sg.B('Volver',size=(20,2), font=('bahnschrift',13,'bold'))]
         ]
-    return sg.Window('Agregar turno', layout, size=(1024,768), finalize=True, element_justification='c',button_color=('#c93c36'))
+    return sg.Window('Agregar turno', layout, size=(1024,700), finalize=True, element_justification='c',button_color=('#c93c36'))
 
 def see_turns():
     """ Genera un nuevo layout con los turnos de los alumnos"""
     people_tuple = [(x['nombre'],x['turnos']) for x in people]
     layout = [
-        [sg.T('TURNOS', font=('bahnschrift',65,'bold'),p=(0,(25,0)))],
+        [sg.T('TURNOS', font=('bahnschrift',65,'bold'),pad=(0,(25,0)))],
         [sg.Table(people_tuple, headings=['Nombre', 'Turnos'],font=('verdana',13,'bold'), key='tabla',col_widths=[30,30],row_height=40,justification='l',auto_size_columns=False, pad=(0,(30,25)),text_color='white', 
                   background_color='#c93c36',hide_vertical_scroll=True)],
         [sg.B('Volver',font=('bahnschrift',13,'bold'),size=(20,2), pad=(0,(0,25)))],
     ]
-    return sg.Window('Turnos', layout, size=(1024,768), finalize=True,element_justification='c',button_color=('#c93c36'))
+    return sg.Window('Turnos', layout, size=(1024,700), finalize=True,element_justification='c',button_color=('#c93c36'))
 
 def turns_by_day():
     """ Layout para filtrar turnos por dia"""
@@ -161,21 +214,42 @@ def turns_by_day():
         [sg.Column(columna1, element_justification='c'),sg.Column(columna2, element_justification='c',pad=((50,0),100))],
         [sg.B('Aplicar',size=(20,2),font=('bahnschrift',13,'bold')), sg.B('Volver',size=(20,2), font=('bahnschrift',13,'bold'))]
     ]
-    return sg.Window('Filtrado por dias de turnos',layout,size=(1024,768),finalize=True,element_justification='c',button_color=('#c93c36'))
+    return sg.Window('Filtrado por dias de turnos',layout,size=(1024,700),finalize=True,element_justification='c',button_color=('#c93c36'))
 
 
 # Layout de los alumnos 
-def alumnos():
+def alumnos(gente):
     columna = [
                 [sg.Text('ALUMNOS',font=('bahnschrift',40,'bold'), pad=(0,(25,30)))],
-                [sg.Listbox(peoples_name, size=(20,20), key='alumno',font=('verdana',13,'bold'), pad=(0,(0,25)))],
+                [sg.Listbox(peoples_name, size=(20,20), key='alumno',font=('verdana',13,'bold'), pad=(0,(0,25)),no_scrollbar=True)],
                 [sg.B('Agregar', font=('bahnschrift',13,'bold')), sg.B('Modificar',font=('bahnschrift',13,'bold')), sg.B('Borrar',font=('bahnschrift',13,'bold')),],
                 [sg.B('Ver', size=(7,1), font=('bahnschrift',13,'bold'),),sg.B('Volver', size=(7,1), font=('bahnschrift',13,'bold'),)]
                 ]
     layout = [
         [sg.Column(columna, element_justification='c')]
     ]
-    return sg.Window('TURNOS',layout,size=(1024,768),finalize=True, element_justification='c',button_color=('#c93c36'))
+    return sg.Window('TURNOS',layout,size=(1024,700),finalize=True, element_justification='c',button_color=('#c93c36'))
+
+def add_modify_alumno(action):
+    columna = [
+        [sg.Text(f'{action.upper()} ALUMNOS',font=('bahnschrift',40,'bold'), pad=(0,(25,50)))],
+        [sg.Text('Nombre alumno: ',font=('verdana',13,'bold'),text_color='white'), sg.I(key='nombre_alumno',size=(20,1))],
+        
+    ]
+    columna2 = [
+        [sg.Text('Dias que asiste:',font=('verdana',13,'bold'))], 
+        [sg.Checkbox('Lunes',key='lunes',font=('verdana',13,'bold'),text_color='white')],
+        [sg.Checkbox('Martes',key='martes',font=('verdana',13,'bold'),text_color='white')],
+        [sg.Checkbox('Miercoles',key='miercoles',font=('verdana',13,'bold'),text_color='white')],
+        [sg.Checkbox('Jueves',key='jueves',font=('verdana',13,'bold'),text_color='white')],
+        [sg.Checkbox('Viernes',key='viernes',font=('verdana',13,'bold'),text_color='white')],
+    ]
+    layout = [
+        [sg.Column(columna, element_justification='c',pad=(0,(0,25)))],
+        [sg.Column(columna2, element_justification='l',pad=(0,(0,25)))],
+        [sg.B(f'{action.upper()}',size=(9,1), font=('bahnschrift',13,'bold')), sg.B('Volver atras',size=(15,1), font=('bahnschrift',13,'bold'))]
+    ]
+    return sg.Window('AGG ALUMNO',layout, size=(1024,700), finalize=True, element_justification='c',button_color=('#c93c36'))
 
 def display_alumno(values):
     """ Genera un layout con los datos del alumno"""
@@ -190,7 +264,7 @@ def crud():
 # Layout de rutinas, display y CRUD tambien en lo posible
 def rutinas():
     columna = [
-                [sg.Text('RUTINAS',font=('bahnschrift',35,'bold'),p=(0,(0,25)))],
+                [sg.Text('RUTINAS',font=('bahnschrift',35,'bold'),pad=(0,(0,25)))],
                 [sg.Listbox(routines, size=(20,len(routines)),font=('verdana',13,'bold'), key='rutina', pad=(0,(0,25)))],
                 [sg.B('Agregar', font=('bahnschrift',13,'bold')), sg.B('Modificar',font=('bahnschrift',13,'bold')), sg.B('Borrar',font=('bahnschrift',13,'bold'))],
                 [sg.B('Ver', size=(7,1), font=('bahnschrift',13,'bold')),sg.B('Volver',font=('bahnschrift',13,'bold'), size=(7,1))]
@@ -198,7 +272,7 @@ def rutinas():
     layout = [
         [sg.Column(columna, element_justification='c', pad=(0,150))]
     ]
-    return sg.Window('RUTINAS',layout,size=(1024,768),finalize=True, element_justification='c',button_color=('#c93c36'))
+    return sg.Window('RUTINAS',layout,size=(1024,700),finalize=True, element_justification='c',button_color=('#c93c36'))
     
 def display_routine(value):
     columna = [
@@ -208,7 +282,7 @@ def display_routine(value):
     layout = [
         [sg.Column(columna, element_justification='c', pad=(0,150))]
     ]
-    return sg.Window('RUTINAS',layout,size=(1024,768),finalize=True, element_justification='c',button_color=('#c93c36'))
+    return sg.Window('RUTINAS',layout,size=(1024,700),finalize=True, element_justification='c',button_color=('#c93c36'))
     
 
 
@@ -216,7 +290,8 @@ def main():
     add = False
     modify = False
     # layouts de control
-    principal_layout, turnos_layout, alumnos_layout, rutinas_layout, add_turno_layout, see_turns_layout, filter_turns = principal(), None, None, None, None, None, None
+    principal_layout, turnos_layout, alumnos_layout, rutinas_layout = principal(), None, None, None 
+    add_turno_layout, see_turns_layout, filter_turns, add_alumno_layout = None, None, None, None
     #layouts de displayw
     rutina_layout_display= None
     #layouts de modificacion
@@ -262,12 +337,26 @@ def main():
             hide_unhide(see_turns_layout, turnos_layout)
         # Alumnos
         if event == 'ALUMNOS' and window == principal_layout:
-            alumnos_layout = alumnos()
+            alumnos_layout = alumnos(people)
             principal_layout.hide()
         if event == 'Agregar' and window == alumnos_layout:
             # Agregando un alumno
-            # add_alumno()
-            pass
+            add_alumno_layout = add_modify_alumno('agregar')
+            alumnos_layout.hide() 
+        if event == 'Agregar' and window == add_alumno_layout:
+            # En el layout, ya agregando el alumno
+            set_alumno(values, people)
+        if event == 'Modificar' and window == alumnos_layout:
+            # Modificando un alumno}
+            student = get_alumno(values)
+            add_alumno_layout = add_modify_alumno('modificar')
+            
+            alumnos_layout.hide()
+        if event == 'Borrar' and window == alumnos_layout:
+            # Borrnado un alumno
+            delete_alumno(values, alumnos_layout)
+        if event == 'Volver atras' and window == add_alumno_layout:
+            hide_unhide(add_alumno_layout, principal_layout)
         if event == 'Ver' and window == alumnos_layout:
             # Popup de alumno seleccionado
             display_alumno(values)
@@ -293,4 +382,4 @@ def main():
 if __name__ == '__main__':
     main()
     # print(distance_between_dates(datetime.today(), datetime.strptime(people[0]['cuota'],'%d/%m/%Y')))     
-    
+    # print(datetime.today().strftime("%d/%m/%Y"))
