@@ -27,6 +27,15 @@ peoples_name = [x['nombre'] for x in people]
     
 
 # Funciones utiles no relacionadas al LAYOUT
+
+def date_from_tuple(fecha):
+    """ Devuelve una fecha con formato requerido desde la tupla generada por el sg.popup_get_date()"""
+    day = int(fecha[1])
+    month = int(fecha[0]) 
+    year = int(fecha[2])
+    return datetime(year, month, day).strftime("%d/%m/%Y")
+
+
 def get_alumno(valores):
     """ Devuelve el alumno completo segun el nombre pasado"""
     return people[get_alumno_index(valores['alumno'][0])]
@@ -41,7 +50,7 @@ def set_alumno(valores, pList):
             pList.append({
                 'nombre': valores['nombre_alumno'],
                 'turnos': turnos,
-                'pago': valores['date'].strftime("%d/%m/%Y"),
+                'pago': date_from_tuple(valores['date']),
                 'cuota': True
             })
             peoples_name.append(valores['nombre_alumno'])
@@ -50,13 +59,12 @@ def set_alumno(valores, pList):
             sg.popup('El alumno ya existe')
 
 def modify_alumno(valores, alumno):
-    """ Modifica los datos de un alumno """
-    add_modify_alumno['nombre']
+    """ Modifica los datos de un alumno, recibiendo como argumentos un alumno, y los values de la ventana """
     alumno['nombre'] = valores['nombre_alumno']
     alumno['turnos'] = [k.title() for k,v in valores.items() if v == True]
-    alumno['cuota'] = True
-    alumno['']
-    
+    alumno['pago'] = date_from_tuple(valores['date'])
+    peoples_name[get_alumno_index(alumno['nombre'])] = alumno['nombre']
+        
 
     
 def delete_alumno(valores, window):
@@ -66,25 +74,7 @@ def delete_alumno(valores, window):
     people.remove(alumnito)
     window['alumno'].update(peoples_name)
 
-def set_alumno(valores, pList):
-    """ Recibe los valores de la window actual y los appendea a la lista de personas"""
-    turnos = [k.title() for k,v in valores.items() if v == True]
-    if len(valores['nombre_alumno']) < 1 or len(turnos) < 1 or len(valores['date']) < 1:
-        sg.popup('Ingrese todos los datos para continuar')
-    else:
-        if valores['nombre_alumno'] not in peoples_name:    
-            pList.append({
-                'nombre': valores['nombre_alumno'],
-                'turnos': turnos,
-                'pago': datetime.today().strftime("%d/%m/%Y"),
-                'cuota': True
-            })
-            peoples_name.append(valores['nombre_alumno'])
-            sg.popup('Alumno agregado con exito')
-        else:
-            sg.popup('El alumno ya existe')
-
-
+    
 def distance_between_dates(date1, date2):
     """ Retorna distancia entre dos fechas en dias"""
     return abs(date2 - date1).days
@@ -342,15 +332,21 @@ def main():
             alumnos_layout.hide() 
         if event == 'Fecha de pago' and window == add_alumno_layout:
             fecha = sg.popup_get_date()
+            print(date_from_tuple(fecha))
             add_alumno_layout['date'].update(fecha)
         if event == 'AGREGAR' and window == add_alumno_layout:
             # En el layout, ya agregando el alumno
             set_alumno(values, people)
         if event == 'Modificar' and window == alumnos_layout:
-            # Modificando un alumno}
-            student = get_alumno(values)
+        # Modificando un alumno}
+            try:
+                student = get_alumno(values)
+            except:
+                sg.popup('No selecciono alumno para modificar')
             add_alumno_layout = add_modify_alumno('modificar')
             alumnos_layout.hide()
+        if event == 'MODIFICAR' and window == add_alumno_layout:
+            modify_alumno(values, student)
         if event == 'Borrar' and window == alumnos_layout:
             # Borrnado un alumno
             delete_alumno(values, alumnos_layout)
