@@ -273,13 +273,20 @@ def rutinas():
     ]
     return sg.Window('RUTINAS',layout,size=(1024,700),finalize=True, element_justification='c',button_color=('#c93c36'))
     
-def display_routine(value):
+def display_routine(valores):
+    """ Genera un layout con la imagen de la rutina"""
+    ruta = valores['rutina'][0].lower().split(' ')
+    ruta = ''.join(ruta)
+    ruta = f'routines/{ruta}.png'
+    print(ruta)
     columna = [
-                [sg.Text(f'RUTINA {value["rutina"][0]}',font=('Arial',40))],
+                [sg.Text(f'RUTINA {valores["rutina"][0].upper()}',font=('bahnschrift',40))],
+                [sg.Image(ruta,pad=(0,(0,25)))],
                 [sg.B('Volver', font=('bahnschrift',13,'bold'),size=(7,1))]
                 ]
     layout = [
-        [sg.Column(columna, element_justification='c', pad=(0,150))]
+        [sg.Column(columna, element_justification='c', pad=(0,50))],
+        
     ]
     return sg.Window('RUTINAS',layout,size=(1024,700),finalize=True, element_justification='c',button_color=('#c93c36'))
     
@@ -392,6 +399,7 @@ def main():
         if event == 'Ver' and window == rutinas_layout:
             try:
                 rutina_layout_display = display_routine(values)
+                print(values)
                 rutinas_layout.hide()
             except IndexError:
                 sg.popup('No selecciono ninguna rutina')
@@ -403,7 +411,6 @@ def main():
             principal_layout.hide()
         if event == 'Registrar pago' and window == cuotas_layout:
             pos = values['tabla'][0]
-            
             try:
                 fecha = sg.popup_get_date()
                 fecha = date_from_tuple(fecha)
