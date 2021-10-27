@@ -59,9 +59,12 @@ def set_alumno(valores, pList,date):
 
 def modify_alumno(valores, alumno, date):
     """ Modifica los datos de un alumno, recibiendo como argumentos un alumno, y los values de la ventana """
+    # Nombre anterior del alumno
+    peoples_name[get_alumno_index(alumno['nombre'])] = valores['nombre_alumno']
     alumno['nombre'] = valores['nombre_alumno']
     alumno['turnos'] = [k.title() for k,v in valores.items() if v == True]
     alumno['pago'] = date
+    sg.popup('Alumno modificado')
     
         
 
@@ -218,7 +221,7 @@ def alumnos(gente):
 
 def add_modify_alumno(action):
     columna = [
-        [sg.Text(f'{action.upper()} ALUMNOS',font=('bahnschrift',40,'bold'), pad=(0,(25,50)))],
+        [sg.Text(f'{action.upper()} ALUMNOS',font=('bahnschrift',40,'bold'), pad=(0,(25,50)),key='add_modify_text')],
         [sg.Text('Nombre alumno: ',font=('verdana',13,'bold'),text_color='white'), sg.I(key='nombre_alumno',size=(20,1))],
         
     ]
@@ -234,7 +237,7 @@ def add_modify_alumno(action):
         [sg.Column(columna, element_justification='c',pad=(0,(0,25)))],
         [sg.Column(columna2, element_justification='l',pad=(0,(0,25)))],
         [sg.Button('Fecha de pago',font=('bahnschrift',13,'bold'),size=(20,1),pad=(5,(0,25))), sg.I(key='date',pad=(0,(0,25)),size=(15,1),font=('verdana',13,'bold'),text_color='white')],
-        [sg.B(f'{action.upper()}',size=(9,1), font=('bahnschrift',13,'bold')), sg.B('Volver atras',size=(15,1), font=('bahnschrift',13,'bold'))]
+        [sg.B(f'{action.upper()}',size=(10,1), font=('bahnschrift',13,'bold')), sg.B('Volver atras',size=(15,1), font=('bahnschrift',13,'bold'))]
     ]
     return sg.Window('AGG ALUMNO',layout, size=(1024,700), finalize=True, element_justification='c',button_color=('#c93c36'))
 
@@ -253,7 +256,7 @@ def rutinas():
     columna = [
                 [sg.Text('RUTINAS',font=('bahnschrift',35,'bold'),pad=(0,(0,25)))],
                 [sg.Listbox(routines, size=(20,len(routines)),font=('verdana',13,'bold'), key='rutina', pad=(0,(0,25)))],
-                [sg.B('Agregar', font=('bahnschrift',13,'bold')), sg.B('Modificar',font=('bahnschrift',13,'bold')), sg.B('Borrar',font=('bahnschrift',13,'bold'))],
+                [sg.B('Modificar',font=('bahnschrift',13,'bold'))],
                 [sg.B('Ver', size=(7,1), font=('bahnschrift',13,'bold')),sg.B('Volver',font=('bahnschrift',13,'bold'), size=(7,1))]
                 ]
     layout = [
@@ -337,23 +340,38 @@ def main():
             # En el layout, ya agregando el alumno
             set_alumno(values, people, fecha)
         if event == 'Modificar' and window == alumnos_layout:
-        # Modificando un alumno}
+            # Modificando un alumno
             try:
                 student = get_alumno(values)
             except:
                 sg.popup('No selecciono alumno para modificar')
-            add_alumno_layout = add_modify_alumno('modificar')
-            alumnos_layout.hide()
+            else:
+                add_alumno_layout = add_modify_alumno('modificar')
+                add_alumno_layout['add_modify_text'].Update(f'Modificando a {student["nombre"]}')
+                alumnos_layout.hide()
         if event == 'MODIFICAR' and window == add_alumno_layout:
-            modify_alumno(values, student, fecha)
+            # Ya en el layout de modificacion de alumno
+            try:
+                modify_alumno(values, student, fecha)
+            except:
+                sg.popup('Faltan datos que completar')
         if event == 'Borrar' and window == alumnos_layout:
-            # Borrnado un alumno
-            delete_alumno(values, alumnos_layout)
+            # Borrando un alumno
+            print(values)
+            if len(values['alumno']) < 1:
+                sg.popup('No selecciono ningun alumno',font=('verdana',13),text_color='white')
+            elif len(peoples_name) >= 1:
+                delete_alumno(values, alumnos_layout)
+            else:
+                sg.popup('No hay mas alumnos para borrar',font=('verdana',13),text_color='white')
         if event == 'Volver atras' and window == add_alumno_layout:
             hide_unhide(add_alumno_layout, principal_layout)
         if event == 'Ver' and window == alumnos_layout:
             # Popup de alumno seleccionado
-            display_alumno(values)
+            try:
+                display_alumno(values)
+            except IndexError:
+                sg.popup('No selecciono ningun alumno',font=('verdana',13),text_color='white')
         if event == 'Volver' and window == alumnos_layout:
             # Volviendo de layout de alumnos al layout principal
             hide_unhide(alumnos_layout, principal_layout)
