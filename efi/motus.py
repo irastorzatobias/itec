@@ -1,5 +1,4 @@
 
-from tkinter.constants import W
 import PySimpleGUI as sg
 from datetime import datetime
 sg.theme('DarkBrown4')
@@ -255,17 +254,16 @@ def cuotas():
         [sg.T('CUOTAS', font=('bahnschrift',65,'bold'),pad=(0,(25,0)))],
         [sg.Table(people_tuple, headings=['Nombre', 'Ultimo pago cuota'],font=('verdana',13,'bold'), key='tabla',col_widths=[30,30],row_height=40,justification='c',auto_size_columns=False, pad=(0,(30,25)),text_color='white', 
                   background_color='#c93c36',hide_vertical_scroll=True)],
-        [sg.B('Registrar pago',font=('bahnschrift',13,'bold'),size=(20,2), pad=(0,(0,25))),sg.B('Volver',font=('bahnschrift',13,'bold'),size=(20,2), pad=(0,(0,25)))],
+        [sg.B('Registrar pago',font=('bahnschrift',13,'bold'),size=(20,2), pad=(10,(0,25))),sg.B('Volver',font=('bahnschrift',13,'bold'),size=(20,2), pad=(0,(0,25)))],
     ]
     return sg.Window('Turnos', layout, size=(1024,700), finalize=True,element_justification='c',button_color=('#c93c36'))
     
 
-# Layout de rutinas, display y CRUD tambien en lo posible
+# Layout de rutinas
 def rutinas():
     columna = [
                 [sg.Text('RUTINAS',font=('bahnschrift',35,'bold'),pad=(0,(0,25)))],
                 [sg.Listbox(routines, size=(20,len(routines)),font=('verdana',13,'bold'), key='rutina', pad=(0,(0,25)))],
-                [sg.B('Modificar',font=('bahnschrift',13,'bold'))],
                 [sg.B('Ver', size=(7,1), font=('bahnschrift',13,'bold')),sg.B('Volver',font=('bahnschrift',13,'bold'), size=(7,1))]
                 ]
     layout = [
@@ -415,7 +413,7 @@ def main():
                 fecha = sg.popup_get_date()
                 fecha = date_from_tuple(fecha)
             except:
-                sg.popup('Error')
+                sg.popup('No se registro el pago')
             else:
                 people[pos]['pago'] = fecha
                 people_tuple = [(x['nombre'],x['pago']) for x in people]
