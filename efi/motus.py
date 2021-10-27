@@ -133,7 +133,7 @@ def principal():
                 [sg.B('TURNOS', size=(20,2), pad=(0,(0,25)),font=('bahnschrift',13,'bold'))],
                 [sg.B('ALUMNOS', size=(20,2), pad=(0,(0,25)),font=('bahnschrift',13,'bold'))],
                 [sg.B('RUTINAS', size=(20,2), pad=(0,(0,25)),font=('bahnschrift',13,'bold'))],
-                [sg.B('GESTION CUOTAS', size=(20,2), pad=(0,(0,25)),font=('bahnschrift',13,'bold'))],
+                [sg.B('ESTADO CUOTAS', size=(20,2), pad=(0,(0,25)),font=('bahnschrift',13,'bold'))],
                 [sg.B('SALIR', size=(20,2), pad=(0,(0,25)),font=('bahnschrift',13,'bold'))],
                 ]
     layout = [
@@ -247,9 +247,18 @@ def display_alumno(values):
     text = f'Alumno {alumnito["nombre"]}\nTurnos: {alumnito["turnos"]}\nUltima cuota paga: {alumnito["pago"]}'
     sg.popup(text,title='Alumno',font=('verdana',13,'bold'),button_color=('#c93c36'))
 
-# En un principio es para modificar a los alumnos
-def crud():
-    pass
+# Cuotas
+def cuotas():
+    """ Genera un nuevo layout con los turnos de los alumnos"""
+    people_tuple = [(x['nombre'],x['pago']) for x in people]
+    layout = [
+        [sg.T('CUOTAS', font=('bahnschrift',65,'bold'),pad=(0,(25,0)))],
+        [sg.Table(people_tuple, headings=['Nombre', 'Ultimo pago cuota'],font=('verdana',13,'bold'), key='tabla',col_widths=[30,30],row_height=40,justification='c',auto_size_columns=False, pad=(0,(30,25)),text_color='white', 
+                  background_color='#c93c36',hide_vertical_scroll=True)],
+        [sg.B('Registrar pago',font=('bahnschrift',13,'bold'),size=(20,2), pad=(0,(0,25))),sg.B('Volver',font=('bahnschrift',13,'bold'),size=(20,2), pad=(0,(0,25)))],
+    ]
+    return sg.Window('Turnos', layout, size=(1024,700), finalize=True,element_justification='c',button_color=('#c93c36'))
+    
 
 # Layout de rutinas, display y CRUD tambien en lo posible
 def rutinas():
@@ -278,13 +287,11 @@ def display_routine(value):
 
 def main():
 
-    # layouts de control
-    principal_layout, turnos_layout, alumnos_layout, rutinas_layout = principal(), None, None, None 
+    
+    principal_layout, turnos_layout, alumnos_layout, rutinas_layout, cuotas_layout = principal(), None, None, None, None 
     add_turno_layout, see_turns_layout, filter_turns, add_alumno_layout = None, None, None, None
-    #layouts de displayw
     rutina_layout_display= None
-    #layouts de modificacion
-    crud_layout = None
+
     while True:
         window,event, values = sg.read_all_windows()
         if event == 'SALIR' or event == sg.WIN_CLOSED or event == 'Escape:27' and window == principal_layout:
@@ -381,12 +388,36 @@ def main():
             principal_layout.hide()
         if event == 'Volver' and window == rutinas_layout:
             hide_unhide(rutinas_layout, principal_layout)
-        # Viendo rutina
+            # Viendo rutina
         if event == 'Ver' and window == rutinas_layout:
-            rutina_layout_display = display_routine(values)
-            rutinas_layout.hide()
+            try:
+                rutina_layout_display = display_routine(values)
+                rutinas_layout.hide()
+            except IndexError:
+                sg.popup('No selecciono ninguna rutina')
         if event == 'Volver' and window == rutina_layout_display:
             hide_unhide(rutina_layout_display, rutinas_layout)
+        # Estado cuotas
+        if event == 'ESTADO CUOTAS' and window == principal_layout:
+            cuotas_layout = cuotas()
+            principal_layout.hide()
+        if event == 'Registrar pago' and window == cuotas_layout:
+            pos = values['tabla'][0]
+            
+            try:
+                fecha = sg.popup_get_date()
+                fecha = date_from_tuple(fecha)
+            except:
+                sg.popup('Error')
+            else:
+                people[pos]['pago'] = fecha
+                people_tuple = [(x['nombre'],x['pago']) for x in people]
+                cuotas_layout['tabla'].update(people_tuple)
+                sg.popup('Pago registrado con exito')
+        if event == 'Volver' and window == cuotas_layout:
+            hide_unhide(cuotas_layout, principal_layout)
+
+        
             
         
                 
