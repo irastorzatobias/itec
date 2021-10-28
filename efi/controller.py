@@ -15,9 +15,9 @@ def createDB(name):
         conn = sql.connect(f'{name}.db')
         conn.commit()
         conn.close()
-        print(f'La base de datos {name} fue creada con exito')
-    except:
-        print('La base de datos ya esta creada')
+        return (f'Conexion con base de datos establecida')
+    except Error:
+        return (Error)
         
         
 def createTable(nameDb, table): # se podria agregar metodo fields
@@ -26,32 +26,35 @@ def createTable(nameDb, table): # se podria agregar metodo fields
         conn = sql.connect(f'{nameDb}.db')
         cursor = conn.cursor()
         instruccion = f"""CREATE TABLE {table} (
-            name text NOT NULL UNIQUE,
-            age integer
-            )"""
+                name text NOT NULL UNIQUE,
+                turn text NOT NULL,
+                payment text NOT NULL
+                )"""
         cursor.execute(instruccion)
         conn.commit() # realizar los cambios
         cursor.close()
         conn.close()
-        print('Tabla creada con exito')
-    except Error:
-        print(Error)
+        return ('Tabla creada con exito')
+    except:
+        return ('La tabla ya existe')
 
 
-def insertRow(nameDb,table,nombre, edad):
+
+def insertRow(nameDb,table,nombre, turnos, pago):
     """ Inserta nombre y edad en nuestra base de datos que contiene personas"""
     try:
         conn = sql.connect(f'{nameDb}.db')
         cursor = conn.cursor()
         instruccion = f"""INSERT INTO {table}
-                        VALUES ('{nombre}', {edad})"""
+                            VALUES ('{nombre}', '{turnos}','{pago}')"""
         cursor.execute(instruccion)
         conn.commit() # realizar los cambios
         cursor.close()
         conn.close()
-        print(f'Se agrego {nombre} a la tabla')
-    except Error:
-        print(Error.args)
+        return (f'Se agrego {nombre} a la tabla')
+    except:
+        return ('Ya existe el alumno')
+        
 
 
 def readRows(nameDb, table):
@@ -65,9 +68,9 @@ def readRows(nameDb, table):
         conn.commit() # realizar los cambios
         cursor.close()
         conn.close()
-        print(datos)
+        return (datos)
     except Error:
-        print(Error)
+        return 'Error BD'
         
 def insertRows(nameDb, table, listPersonas):
     """ Inserta varios datos tras pasarle una tupla a la funcion """
@@ -109,26 +112,27 @@ def search(nameDb, table, condition):
         conn.commit() # realizar los cambios
         cursor.close()
         conn.close()
-        print(datos)
+        return datos
     except Error as er:
         print(Error)
 
 
-def updateFields():
+def updateFields(nombreAnterior,nombreNuevo,turnos,pago):
     """ Update de algun field """
-    conn = sql.connect('personas.db')
+    conn = sql.connect('motus.db')
     cursor = conn.cursor()
-    instruccion = f"""UPDATE humano SET age=22 WHERE name like 'Tobias'"""
+    instruccion = f"""UPDATE alumnos SET 
+                            name='{nombreNuevo}', turn='{turnos}', payment='{pago}' WHERE name = '{nombreAnterior}'"""
     cursor.execute(instruccion)
     conn.commit() # realizar los cambios
     conn.close()
     
 
 
-def deleteItem(name, table, condition):
-    conn = sql.connect(f'{name}.db')
+def deleteRow(condition):
+    conn = sql.connect(f'motus.db')
     cursor = conn.cursor()
-    instruccion = f"""DELETE FROM {table} WHERE {condition}"""
+    instruccion = f"""DELETE FROM alumnos WHERE {condition}"""
     cursor.execute(instruccion)
     conn.commit() # realizar los cambios
     conn.close()
