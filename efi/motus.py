@@ -73,7 +73,7 @@ def date_from_tuple(fecha):
     return datetime(year, month, day).strftime("%d/%m/%Y")
 
 def reset_listbox(window,pagos=False):
-    """ Resetea la listbox de alumnos, con nombres. O con pagos, en caso de que sea la tabla correspondiente al apartado ESTADO CUOTAS"""
+    """ Resetea la listbox o tabla de alumnos, con nombres. O con pagos, en caso de que sea la tabla correspondiente al apartado ESTADO CUOTAS"""
     personas =  get_data_from_db('motus','alumnos')
     if pagos:
         people_tuple = [(x['nombre'],x['pago']) for x in personas]
@@ -159,7 +159,7 @@ def principal():
                 [sg.B('SALIR', size=(20,2), pad=(0,(0,25)),font=('bahnschrift',13,'bold'))],
                 ]
     layout = [
-                [sg.Column(columna,element_justification='c',pad=(0,100))],
+                [sg.Column(columna,element_justification='c',pad=(0,50))],
                 ]
     return sg.Window('MOTUS TRAINING', layout,size=(1024,700),finalize=True, element_justification='c',button_color=('#c93c36'),return_keyboard_events=True)
 
@@ -322,6 +322,8 @@ def display_routine(valores):
 
 
 def main():
+    print(sql.createDB('motus'))
+    print(sql.createTable('motus','alumnos'))
     pName = get_people_name('motus','alumnos')
     routines = ['Dia 1', 'Dia 2', 'Dia 3', 'Dia 4', 'Dia 5'] 
     principal_layout, turnos_layout, alumnos_layout, rutinas_layout, cuotas_layout = principal(), None, None, None, None 
