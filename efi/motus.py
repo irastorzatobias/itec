@@ -471,10 +471,6 @@ def main():
         if event == 'Volver' and window == cuotas_layout:
             hide_unhide(cuotas_layout, principal_layout)
 
-        
-            
-        
-                
 
 if __name__ == '__main__':
     main()
