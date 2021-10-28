@@ -88,18 +88,18 @@ def set_alumno(valores,date):
     """ Recibe los valores de la window actual y los appendea a la lista de personas"""
     turnos = [k.title() for k,v in valores.items() if v == True]
     turnos_text = ','.join(turnos)
-    if len(valores['nombre_alumno']) < 1 or len(turnos) < 1:
+    if len(valores['alumno']) < 1 or len(turnos) < 1:
         sg.popup('Ingrese todos los datos para continuar')
     else:
         try:
-            sg.popup(sql.insertRow('motus','alumnos',valores['nombre_alumno'],turnos_text,date))
+            sg.popup(sql.insertRow('motus','alumnos',valores['alumno'],turnos_text,date))
         except:
             sg.popup('Error al cargar usuario')
             
             
 def modify_alumno(valores, nombre, date):
     """ Modifica los datos de un alumno, recibiendo como argumentos un alumno, y los values de la ventana """
-    nName = valores['nombre_alumno']
+    nName = valores['alumno']
     turnos = [k.title() for k,v in valores.items() if v == True]
     turnos_text = ','.join(turnos)
     sql.updateFields(nombre,nName,turnos_text,date)
@@ -122,9 +122,10 @@ def distance_between_dates(date1, date2):
     """ Retorna distancia entre dos fechas en dias"""
     return abs(date2 - date1).days
 
-def filter_by_turn(dict, day):
+def filter_by_turn(day):
     """ Retorna un diccionario de las personas con las que coincide el turno de un dia """
-    return [x['nombre'] for x in dict if day in x['turnos']]
+    data = get_data_from_db('motus','alumnos')
+    return [x['nombre'] for x in data if day in x['turnos']]
 
 
 def get_day_name(date):
@@ -137,8 +138,9 @@ def hide_unhide(actual, target):
     target.un_hide()
     actual.hide()
     
-def ver_turno(persona):
+def ver_turno(valores):
     """ Printea los turnos de las personas """
+    persona = get_alumno(valores['alumno'][0])
     text = ''
     for k,v in persona.items():
         # Exceptuo los items cuota y pago
@@ -266,7 +268,7 @@ def alumnos(gente):
 def add_modify_alumno(action):
     columna = [
         [sg.Text(f'{action.upper()} ALUMNOS',font=('bahnschrift',40,'bold'), pad=(0,(25,50)),key='add_modify_text')],
-        [sg.Text('Nombre alumno: ',font=('verdana',13,'bold'),text_color='white'), sg.I(key='nombre_alumno',size=(20,1))],
+        [sg.Text('Nombre alumno: ',font=('verdana',13,'bold'),text_color='white'), sg.I(key='alumno',size=(20,1))],
         
     ]
     columna2 = [
@@ -287,7 +289,7 @@ def add_modify_alumno(action):
 
 def display_alumno(values):
     """ Genera un layout con los datos del alumno"""
-    alumnito = get_alumno(values)
+    alumnito = get_alumno(values['alumno'][0])
     text = f'Alumno {alumnito["nombre"]}\nTurnos: {alumnito["turnos"]}\nUltima cuota paga: {alumnito["pago"]}'
     sg.popup(text,title='Alumno',font=('verdana',13,'bold'),button_color=('#c93c36'))
 
@@ -368,7 +370,7 @@ def main():
         if event == 'Aplicar' and window == filter_turns:
             day = [k for k,v in values.items() if v == True]
             window['turnos_por_dia'].update(f'Turnos del dia {day[0].lower()}')
-            window['alumnos'].update(filter_by_turn(people,day[0]))
+            window['alumnos'].update(filter_by_turn(day[0]))
             
         if event == 'Volver' and window == filter_turns:
             hide_unhide(filter_turns, turnos_layout)
@@ -395,8 +397,8 @@ def main():
             add_alumno_layout['date'].update(fecha)
         if event == 'AGREGAR' and window == add_alumno_layout:
             # En el layout, ya agregando el alumno
-            print(values)
             set_alumno(values,fecha) 
+            reset_listbox(window)
         if event == 'Modificar' and window == alumnos_layout:
             #Modificando un alumno
             try:
@@ -411,6 +413,7 @@ def main():
             # Ya en el layout de modificacion de alumno
             try:
                 modify_alumno(values, student["nombre"], fecha)
+                reset_listbox(window)
             except:
                 sg.popup('Faltan datos que completar / No se pudo modificar el alumno')
         if event == 'Filtrar':
@@ -430,6 +433,7 @@ def main():
                 sg.popup('No selecciono ningun alumno',font=('verdana',13),text_color='white')
             elif len(peoples_name) >= 1:
                 delete_alumno(values)
+                reset_listbox(window)
             else:
                 sg.popup('No hay mas alumnos para borrar',font=('verdana',13),text_color='white')
         if event == 'Volver atras' and window == add_alumno_layout:
