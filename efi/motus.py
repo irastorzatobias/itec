@@ -6,26 +6,6 @@ import controller as sql
 
 sg.theme('DarkBrown4')
 
-people = [{
-    'nombre': 'Tobias Irastorza',
-    'turnos': ['Lunes', 'Miercoles', 'Viernes'],
-    'pago': '29/08/2021',
-    },
-    {        
-    'nombre': 'Lautaro Irastorza',
-    'turnos': ['Lunes', 'Miercoles', 'Viernes'],
-    'pago': '29/08/2021',    
-    },
-    {        
-    'nombre': 'Lautaro Martinez',
-    'turnos': ['Lunes', 'Jueves','Viernes'],
-    'pago': '29/08/2021', 
-    },
-    ]
-routines = ['Dia 1', 'Dia 2', 'Dia 3', 'Dia 4', 'Dia 5'] 
-test = [['Tobias','Irastorza'],['Lautaro','Irastorza'],['Lautaro','Martinez']]
-
-peoples_name = [x['nombre'] for x in people]
 # Trabajando con BD     
 def get_data_from_db(dbName, tableName):
     """ Recibe los datos de la BD y los devuelve como un diccionario para mejor representacion de los datos"""
@@ -43,18 +23,38 @@ def get_data_from_db(dbName, tableName):
         })
     return people
 
-def format_data_from_db(tupla):
-    persona = {}
-    nombre = tupla[0][0]   
-    turnos = tupla[0][1].split(',')
-    turnos = [t.title() for t in turnos]
-    pago = tupla[0][2]    
-    persona = {
-        'nombre':nombre,
-        'turnos':turnos,
-        'pago':pago
-        }
-    return persona
+def get_people_name(dbName, tableName):
+    """ Retorna el nombre de las personas """
+    data = get_data_from_db(dbName, tableName)
+    return [x['nombre'] for x in data]
+
+def format_data_from_db(tuplaList):
+
+    if len(tuplaList) == 1: # En caso de que sea una sola persona
+        persona = {}
+        nombre = tuplaList[0][0]   
+        turnos = tuplaList[0][1].split(',')
+        turnos = [t.title() for t in turnos]
+        pago = tuplaList[0][2]    
+        persona = {
+                'nombre':nombre,
+                'turnos':turnos,
+                'pago':pago
+                }
+        return persona
+    elif len(tuplaList) > 1: # En caso de que sea mas de una persona
+        persona = []
+        for p in tuplaList:
+                nombre = p[0]   
+                turnos = p[1].split(',')
+                turnos = [t.title() for t in turnos]
+                pago = p[2]    
+                persona.append({
+                    'nombre':nombre,
+                    'turnos':turnos,
+                    'pago':pago
+                })
+        return persona
 
 
 def get_alumno(nombre):
@@ -72,11 +72,11 @@ def date_from_tuple(fecha):
     year = int(fecha[2])
     return datetime(year, month, day).strftime("%d/%m/%Y")
 
-def reset_listbox(window,turnos=False):
-    """ Resetea la listbox de alumnos, solo con los nombres """
+def reset_listbox(window,pagos=False):
+    """ Resetea la listbox de alumnos, con nombres. O con pagos, en caso de que sea la tabla correspondiente al apartado ESTADO CUOTAS"""
     personas =  get_data_from_db('motus','alumnos')
-    if turnos:
-        people_tuple = [(x['nombre'],x['turnos']) for x in personas]
+    if pagos:
+        people_tuple = [(x['nombre'],x['pago']) for x in personas]
         window['alumno'].update(people_tuple)
     else:
         people_name = [x['nombre'] for x in personas]
@@ -103,14 +103,18 @@ def modify_alumno(valores, nombre, date):
     turnos = [k.title() for k,v in valores.items() if v == True]
     turnos_text = ','.join(turnos)
     sql.updateFields(nombre,nName,turnos_text,date)
-    sg.popup('Alumno modificado')
     
 def filter_by_name(name):
     """ Recibe un nombre y filtra los que coincidan con ese nombre u parte de ese nombre"""
     data = sql.search('motus','alumnos',f'name LIKE "%{name}%"')
-    data = format_data_from_db(data)
-    return data
-
+    result = format_data_from_db(data)
+    print(result)
+    if type(result).__name__ == 'dict':
+        return [result["nombre"]]
+    elif type(result).__name__ == 'list':
+        return [x['nombre'] for x in result]
+    else:
+        return 0
     
 def delete_alumno(valores):
     """ Elimina un alumno """
@@ -118,43 +122,17 @@ def delete_alumno(valores):
     sql.deleteRow(f'name = "{nombre}"')
     sg.popup('Alumno eliminado')
     
-def distance_between_dates(date1, date2):
-    """ Retorna distancia entre dos fechas en dias"""
-    return abs(date2 - date1).days
 
 def filter_by_turn(day):
     """ Retorna un diccionario de las personas con las que coincide el turno de un dia """
     data = get_data_from_db('motus','alumnos')
     return [x['nombre'] for x in data if day in x['turnos']]
 
-
-def get_day_name(date):
-    """ Retorna el nombre del dia pasandole una fecha como parametro """
-    day_name = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes','Sabado','Domingo']
-    return day_name[date.weekday()]
-
 def hide_unhide(actual, target):
     """ Esconde la ventana actual y muestra la ventana pasada como target"""
     target.un_hide()
     actual.hide()
-    
-def ver_turno(valores):
-    """ Printea los turnos de las personas """
-    persona = get_alumno(valores['alumno'][0])
-    text = ''
-    for k,v in persona.items():
-        # Exceptuo los items cuota y pago
-        if k in 'turnos':
-            text += f'{v}\n'
-        elif k in 'nombre':
-            text += f'{v} -- '
-    return text
 
-def get_alumno_index(name):
-    """ Retorna el index del alumno """
-    for i,x in enumerate(peoples_name):
-        if x == name:
-            return i
     
 
 def update_turns(valores):
@@ -163,8 +141,9 @@ def update_turns(valores):
     if len(days) == 0 or valores['alumno'] == []:
         sg.popup('Seleccione al menos un dia / alumno', font=('verdana',13, 'bold'), text_color='#c93c36')
     else:
-        pos = get_alumno_index(valores['alumno'][0])
-        people[pos].update({'turnos':days})
+        days_text = ','.join(days)
+        alumno = get_alumno(valores['alumno'][0])
+        sql.updateTurns(alumno['nombre'], days_text)
         sg.popup('Turnos actualizados', font=('verdana',13, 'bold'), text_color='#c93c36')
 
 
@@ -200,6 +179,8 @@ def turnos():
 
 def add_turno():
     """ Modifica turnos mediante uso de Listbox"""
+    data = get_data_from_db('motus','alumnos')
+    names = [x['nombre'] for x in data]
     columna = [
         [sg.Checkbox('LUNES', key='lunes', font=('bahnschrift',13,'bold'))],
         [sg.Checkbox('MARTES', key='martes', font=('bahnschrift',13,'bold'))],
@@ -209,7 +190,7 @@ def add_turno():
         ]
     
     columna2 = [
-        [sg.Listbox(peoples_name, size=(20,20), key='alumno',font=('verdana',13,'bold'), pad=(0,(0,25)))],
+        [sg.Listbox(names, size=(20,20), key='alumno',font=('verdana',13,'bold'), pad=(0,(0,25)))],
     ]
     layout = [
         [sg.Text('GESTION TURNOS', font=('bahnschrift',40,'bold'), pad=(0,(0,50)))],
@@ -219,9 +200,10 @@ def add_turno():
         ]
     return sg.Window('Agregar turno', layout, size=(1024,700), finalize=True, element_justification='c',button_color=('#c93c36'))
 
-def see_turns():
+def see_turns(db, table):
     """ Genera un nuevo layout con los turnos de los alumnos"""
-    people_tuple = [(x['nombre'],x['turnos']) for x in people]
+    data = get_data_from_db(db,table)
+    people_tuple = [(x['nombre'],x['turnos']) for x in data]
     layout = [
         [sg.T('TURNOS', font=('bahnschrift',65,'bold'),pad=(0,(25,0)))],
         [sg.Table(people_tuple, headings=['Nombre', 'Turnos'],font=('verdana',13,'bold'), key='tabla',col_widths=[30,30],row_height=40,justification='l',auto_size_columns=False, pad=(0,(30,25)),text_color='white', 
@@ -251,8 +233,9 @@ def turns_by_day():
 
 
 # Layout de los alumnos 
-def alumnos(gente):
-    peoples_name = [x['nombre'] for x in gente]
+def alumnos(db,table):
+    data = get_data_from_db(db,table)
+    peoples_name = [x['nombre'] for x in data]
     columna = [
                 [sg.Text('ALUMNOS',font=('bahnschrift',40,'bold'), pad=(0,(25,30)))],
                 [sg.Listbox(peoples_name, size=(20,20), key='alumno',font=('verdana',13,'bold'), pad=(0,(0,25)),no_scrollbar=True)],
@@ -294,12 +277,13 @@ def display_alumno(values):
     sg.popup(text,title='Alumno',font=('verdana',13,'bold'),button_color=('#c93c36'))
 
 # Cuotas
-def cuotas():
+def cuotas(db,table):
     """ Genera un nuevo layout con los turnos de los alumnos"""
-    people_tuple = [(x['nombre'],x['pago']) for x in people]
+    data = get_data_from_db(db,table)
+    people_tuple = [(x['nombre'],x['pago']) for x in data]
     layout = [
         [sg.T('CUOTAS', font=('bahnschrift',65,'bold'),pad=(0,(25,0)))],
-        [sg.Table(people_tuple, headings=['Nombre', 'Ultimo pago cuota'],font=('verdana',13,'bold'), key='tabla',col_widths=[30,30],row_height=40,justification='c',auto_size_columns=False, pad=(0,(30,25)),text_color='white', 
+        [sg.Table(people_tuple, headings=['Nombre', 'Ultimo pago cuota'],font=('verdana',13,'bold'), key='alumno',col_widths=[30,30],row_height=40,justification='c',auto_size_columns=False, pad=(0,(30,25)),text_color='white', 
                   background_color='#c93c36',hide_vertical_scroll=True)],
         [sg.B('Registrar pago',font=('bahnschrift',13,'bold'),size=(20,2), pad=(10,(0,25))),sg.B('Volver',font=('bahnschrift',13,'bold'),size=(20,2), pad=(0,(0,25)))],
     ]
@@ -307,7 +291,7 @@ def cuotas():
     
 
 # Layout de rutinas
-def rutinas():
+def rutinas(routines):
     columna = [
                 [sg.Text('RUTINAS',font=('bahnschrift',35,'bold'),pad=(0,(0,25)))],
                 [sg.Listbox(routines, size=(20,len(routines)),font=('verdana',13,'bold'), key='rutina', pad=(0,(0,25)))],
@@ -338,8 +322,8 @@ def display_routine(valores):
 
 
 def main():
-
-    
+    pName = get_people_name('motus','alumnos')
+    routines = ['Dia 1', 'Dia 2', 'Dia 3', 'Dia 4', 'Dia 5'] 
     principal_layout, turnos_layout, alumnos_layout, rutinas_layout, cuotas_layout = principal(), None, None, None, None 
     add_turno_layout, see_turns_layout, filter_turns, add_alumno_layout = None, None, None, None
     rutina_layout_display= None
@@ -379,13 +363,13 @@ def main():
             hide_unhide(add_turno_layout, turnos_layout)
         if event == 'Ver turnos' and window == turnos_layout:
             # Ver los turnos de las personas
-            see_turns_layout = see_turns()
+            see_turns_layout = see_turns('motus','alumnos')
             hide_unhide(turnos_layout, see_turns_layout)
         if event == 'Volver' and window == see_turns_layout:
             hide_unhide(see_turns_layout, turnos_layout)
         # Alumnos
         if event == 'ALUMNOS' and window == principal_layout:
-            alumnos_layout = alumnos(get_data_from_db('motus','alumnos'))
+            alumnos_layout = alumnos('motus','alumnos')
             principal_layout.hide()
         if event == 'Agregar' and window == alumnos_layout:
             # Agregando un alumno
@@ -398,7 +382,6 @@ def main():
         if event == 'AGREGAR' and window == add_alumno_layout:
             # En el layout, ya agregando el alumno
             set_alumno(values,fecha) 
-            reset_listbox(window)
         if event == 'Modificar' and window == alumnos_layout:
             #Modificando un alumno
             try:
@@ -413,14 +396,14 @@ def main():
             # Ya en el layout de modificacion de alumno
             try:
                 modify_alumno(values, student["nombre"], fecha)
-                reset_listbox(window)
+                sg.popup('Alumno modificado')
             except:
                 sg.popup('Faltan datos que completar / No se pudo modificar el alumno')
         if event == 'Filtrar':
             # Filtrando alumno por nombre
             nombre = sg.popup_get_text('Ingrese nombre a buscar')
             alumnos_filtrados = filter_by_name(nombre)
-            if len(alumnos_filtrados) == 0:
+            if alumnos_filtrados == 0:
                 sg.popup('No hay alumnos con ese nombre')
             else:
                 window['alumno'].update(alumnos_filtrados)
@@ -428,10 +411,9 @@ def main():
             reset_listbox(window)
         if event == 'Borrar' and window == alumnos_layout:
             # Borrando un alumno
-            print(values)
             if len(values['alumno']) < 1:
                 sg.popup('No selecciono ningun alumno',font=('verdana',13),text_color='white')
-            elif len(peoples_name) >= 1:
+            elif len(pName) >= 1:
                 delete_alumno(values)
                 reset_listbox(window)
             else:
@@ -449,7 +431,7 @@ def main():
             hide_unhide(alumnos_layout, principal_layout)
         # Rutinas
         if event == 'RUTINAS':
-            rutinas_layout = rutinas()
+            rutinas_layout = rutinas(routines)
             principal_layout.hide()
         if event == 'Volver' and window == rutinas_layout:
             hide_unhide(rutinas_layout, principal_layout)
@@ -465,20 +447,19 @@ def main():
             hide_unhide(rutina_layout_display, rutinas_layout)
         # Estado cuotas
         if event == 'ESTADO CUOTAS' and window == principal_layout:
-            cuotas_layout = cuotas()
+            cuotas_layout = cuotas('motus','alumnos')
             principal_layout.hide()
-        if event == 'Registrar pago' and window == cuotas_layout:
-            pos = values['tabla'][0]
+        if event == 'Registrar pago':
             try:
+                nombre = pName[values['alumno'][0]]
+            except:
+                sg.popup('No se registro el pago / No se selecciono un alumno')
+            else:
                 fecha = sg.popup_get_date()
                 fecha = date_from_tuple(fecha)
-            except:
-                sg.popup('No se registro el pago')
-            else:
-                people[pos]['pago'] = fecha
-                people_tuple = [(x['nombre'],x['pago']) for x in people]
-                cuotas_layout['tabla'].update(people_tuple)
+                sql.updatePay(nombre,fecha)
                 sg.popup('Pago registrado con exito')
+                reset_listbox(window, pagos=True)
         if event == 'Volver' and window == cuotas_layout:
             hide_unhide(cuotas_layout, principal_layout)
 
@@ -489,4 +470,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    # print(sql.insertRow('motus','alumnos','Tobias Irastorza','Lunes','27/08/2021'))

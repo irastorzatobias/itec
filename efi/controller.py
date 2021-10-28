@@ -118,7 +118,7 @@ def search(nameDb, table, condition):
 
 
 def updateFields(nombreAnterior,nombreNuevo,turnos,pago):
-    """ Update de algun field """
+    """ Update de todos los fields, se usa al agregar alumno o al modificar alumno"""
     conn = sql.connect('motus.db')
     cursor = conn.cursor()
     instruccion = f"""UPDATE alumnos SET 
@@ -127,6 +127,27 @@ def updateFields(nombreAnterior,nombreNuevo,turnos,pago):
     conn.commit() # realizar los cambios
     conn.close()
     
+def updateTurns(nombre,turnos):
+    """ Update de los turnos"""
+    conn = sql.connect('motus.db')
+    cursor = conn.cursor()
+    instruccion = f"""UPDATE alumnos SET turn='{turnos}' WHERE name = '{nombre}'"""
+    cursor.execute(instruccion)
+    conn.commit() # realizar los cambios
+    conn.close()
+    
+def updatePay(nombre,pago):
+    """ Update del pago"""
+    conn = sql.connect('motus.db')
+    cursor = conn.cursor()
+    instruccion = f"""UPDATE alumnos SET payment='{pago}' WHERE name = '{nombre}'"""
+    cursor.execute(instruccion)
+    conn.commit() # realizar los cambios
+    conn.close()
+    
+
+    
+
 
 
 def deleteRow(condition):
